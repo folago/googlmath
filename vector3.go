@@ -153,7 +153,6 @@ func (vec Vector3) IsZero() bool {
 }
 
 // Linearly interpolates between this vector and the target vector by alpha which is in the range [0,1].
-// The result is stored in this vector.
 func (vec Vector3) Lerp(target Vector3, alpha float32) Vector3 {
 	vec.Scale(1.0 - alpha)
 	vec.Add(target.Cpy().Scale(alpha))
@@ -161,7 +160,6 @@ func (vec Vector3) Lerp(target Vector3, alpha float32) Vector3 {
 }
 
 // Spherically interpolates between this vector and the target vector by alpha which is in the range [0,1].
-// The result is stored in this vector.
 func (vec Vector3) Slerp(target Vector3, alpha float32) Vector3 {
 	dot := vec.Dot(target)
 	if dot > 0.99995 || dot < 0.9995 {
