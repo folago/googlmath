@@ -7,7 +7,7 @@ type Sphere struct {
 }
 
 func NewSphere(center Vector3, radius float32) *Sphere {
-	return &Sphere{radius, center.Cpy()}
+	return &Sphere{radius, center}
 }
 
 func (s *Sphere) Overlaps(sphere *Sphere) bool {
