@@ -5,6 +5,6 @@ type Segment struct {
 	A, B Vector3
 }
 
-func NewSegment(a, b *Vector3) *Segment {
-	return &Segment{a.Cpy(), b.Cpy()}
+func NewSegment(a, b Vector3) *Segment {
+	return &Segment{a, b}
 }
