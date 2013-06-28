@@ -44,18 +44,13 @@ func (b *Bezier2) Approximate(p3 Vector2) float32 {
 
 // Simple linear interpolation
 func Linear2(t float32, p0, p1 Vector2) Vector2 {
-	tmp := p1.Cpy()
-	out := p0.Cpy()
-	return out.Scale(1.0 - t).Add(tmp.Scale(t))
+	return p0.Scale(1.0 - t).Add(p1.Scale(t))
 }
 
 // Quadratic Bezier curve
 func Quadratic2(t float32, p0, p1, p2 Vector2) Vector2 {
 	dt := 1.0 - t
-	tmp := p1.Cpy()
-	tmp2 := p2.Cpy()
-	out := p0.Cpy()
-	return out.Scale(dt * dt).Add(tmp.Scale(2 * dt * t)).Add(tmp2.Scale(t * t))
+	return p0.Scale(dt * dt).Add(p1.Scale(2 * dt * t)).Add(p2.Scale(t * t))
 }
 
 // Cubic Bezier curve
@@ -63,9 +58,5 @@ func Cubic2(t float32, p0, p1, p2, p3 Vector2) Vector2 {
 	dt := 1 - t
 	dt2 := dt * dt
 	t2 := t * t
-	out := p0.Cpy()
-	tmp := p1.Cpy()
-	tmp2 := p2.Cpy()
-	tmp3 := p3.Cpy()
-	return out.Scale(dt2 * dt).Add(tmp.Scale(3 * dt2 * t)).Add(tmp2.Scale(3 * dt * t2)).Add(tmp3.Scale(t2 * t))
+	return p0.Scale(dt2 * dt).Add(p1.Scale(3 * dt2 * t)).Add(p2.Scale(3 * dt * t2)).Add(p3.Scale(t2 * t))
 }
