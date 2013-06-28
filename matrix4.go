@@ -353,10 +353,10 @@ func (m Matrix4) SetToScaling(x, y, z float32) Matrix4 {
 }
 
 func (m Matrix4) SetToLookAt(direction, up Vector3) Matrix4 {
-	l_vez := direction.Cpy().Nor()
-	l_vex := direction.Cpy().Nor()
-	l_vex.Crs(up).Nor()
-	l_vey := l_vex.Cpy().Crs(l_vez).Nor()
+	l_vez := direction.Nor()
+	l_vex := direction.Nor()
+	l_vex = l_vex.Crs(up).Nor()
+	l_vey := l_vex.Crs(l_vez).Nor()
 	m.Identity()
 
 	m[Matrix4M00] = l_vex.X
@@ -373,9 +373,9 @@ func (m Matrix4) SetToLookAt(direction, up Vector3) Matrix4 {
 }
 
 func (m Matrix4) SetToLookAtTarget(position, target, up Vector3) Matrix4 {
-	tmpVec := target.Cpy().Sub(position)
+	tmpVec := target.Sub(position)
 	m.SetToLookAt(tmpVec, up)
-	return m.Mul(NewTranslationMatrix4(position.Cpy().Scale(-1)))
+	return m.Mul(NewTranslationMatrix4(position.Scale(-1)))
 }
 
 func (m Matrix4) Prj(vec Vector3) Vector3 {
