@@ -141,7 +141,7 @@ func (box *BoundingBox) Mul(matrix Matrix4) *BoundingBox {
 	corners := box.GetCorners()
 	box.Inf()
 	for _, vec := range corners {
-		vec.MulMatrix(matrix)
+		vec = matrix.MulVec3(vec)
 		box.Min.Set(Min(box.Min.X, vec.X), Min(box.Min.Y, vec.Y), Min(box.Min.Z, vec.Z))
 		box.Max.Set(Max(box.Max.X, vec.X), Max(box.Max.Y, vec.Y), Max(box.Max.Z, vec.Z))
 	}

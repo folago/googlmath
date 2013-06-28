@@ -35,6 +35,16 @@ func (vec *Vector2) SetVec2(vec2 Vector2) Vector2 {
 	return *vec
 }
 
+func (vec *Vector2) SetVec3(vec2 Vector3) Vector2 {
+	vec.X = vec2.X
+	vec.Y = vec2.Y
+	return *vec
+}
+
+func (vec Vector2) Vec3() Vector3 {
+	return Vec3(vec.X, vec.Y, 0)
+}
+
 func (vec Vector2) Sub(vec2 Vector2) Vector2 {
 	vec.X -= vec2.X
 	vec.Y -= vec2.Y

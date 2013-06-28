@@ -13,7 +13,7 @@ func NewRay(origin, direction Vector3) *Ray {
 }
 
 func (r *Ray) Cpy() *Ray {
-	return &Ray{Origin: r.Origin.Cpy(), Direction: r.Direction.Cpy()}
+	return &Ray{Origin: r.Origin, Direction: r.Direction}
 }
 
 func (r *Ray) Set(origin, direction Vector3) *Ray {
@@ -23,15 +23,15 @@ func (r *Ray) Set(origin, direction Vector3) *Ray {
 }
 
 func (r *Ray) GetEndPoint(distance float32) Vector3 {
-	return r.Origin.Cpy().Add(r.Direction.Cpy().Scale(distance))
+	return r.Origin.Add(r.Direction.Scale(distance))
 }
 
 // Multiplies the ray by the given matrix. Use this to transform a ray into another coordinate system.
 func (r *Ray) Mul(matrix Matrix4) *Ray {
-	tmp := r.Origin.Cpy().Add(r.Direction)
-	tmp.MulMatrix(matrix)
-	r.Origin.MulMatrix(matrix)
-	tmp.Sub(r.Origin)
+	tmp := r.Origin.Add(r.Direction)
+	tmp = matrix.MulVec3(tmp)
+	r.Origin = matrix.MulVec3(r.Origin)
+	tmp = tmp.Sub(r.Origin)
 	r.Direction.Set(tmp.X, tmp.Y, tmp.Z)
 	return r
 }

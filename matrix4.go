@@ -134,6 +134,13 @@ func (m Matrix4) Mul(mat Matrix4) Matrix4 {
 	return m.Set(tmp)
 }
 
+func (m Matrix4) MulVec3(vec Vector3) Vector3 {
+	vec.X = vec.X*m[Matrix4M00] + vec.Y*m[Matrix4M01] + vec.Z*m[Matrix4M02] + m[Matrix4M03]
+	vec.Y = vec.X*m[Matrix4M10] + vec.Y*m[Matrix4M11] + vec.Z*m[Matrix4M12] + m[Matrix4M13]
+	vec.Z = vec.X*m[Matrix4M20] + vec.Y*m[Matrix4M21] + vec.Z*m[Matrix4M22] + m[Matrix4M23]
+	return vec
+}
+
 func (m Matrix4) Transpose() Matrix4 {
 	tmp := make(Matrix4, 16)
 	tmp[Matrix4M00] = m[Matrix4M00]
