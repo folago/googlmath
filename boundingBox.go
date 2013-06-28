@@ -10,7 +10,7 @@ type BoundingBox struct {
 }
 
 func NewBoundingBox(Minimum, Maximum Vector3) *BoundingBox {
-	box := &BoundingBox{Min: Vec3(0, 0, 0), Max: Vec3(0, 0, 0)}
+	box := &BoundingBox{}
 	box.Set(Minimum, Maximum)
 	return box
 }
@@ -43,7 +43,7 @@ func (box *BoundingBox) Set(Minimum, Maximum Vector3) *BoundingBox {
 }
 
 func (box *BoundingBox) Cpy() *BoundingBox {
-	return NewBoundingBox(box.Min.Cpy(), box.Max.Cpy())
+	return NewBoundingBox(box.Min, box.Max)
 }
 
 func (box *BoundingBox) IsValid() bool {
@@ -64,7 +64,7 @@ func (box *BoundingBox) GetCorners() []Vector3 {
 }
 
 func (box *BoundingBox) Dimension() Vector3 {
-	return box.Max.Cpy().Sub(box.Min)
+	return box.Max.Sub(box.Min)
 }
 
 func (box *BoundingBox) Extend(bounds *BoundingBox) *BoundingBox {
@@ -130,8 +130,8 @@ func (box *BoundingBox) Inf() *BoundingBox {
 }
 
 func (box *BoundingBox) Clr() *BoundingBox {
-	box.Min.Clr()
-	box.Max.Clr()
+	box.Min = box.Min.Clr()
+	box.Max = box.Max.Clr()
 	return box
 }
 
