@@ -33,7 +33,6 @@ func NewIdentityMatrix4() Matrix4 {
 	m[Matrix4M22] = 1
 	m[Matrix4M33] = 1
 	return m
-
 }
 
 func NewRotationMatrix4(axis Vector3, angle float32) Matrix4 {
@@ -49,6 +48,15 @@ func NewTranslationMatrix4(vec Vector3) Matrix4 {
 	m[Matrix4M03] = vec.X
 	m[Matrix4M13] = vec.Y
 	m[Matrix4M23] = vec.Z
+	return m
+}
+
+func NewScaleMatrix4(vec Vector3) Matrix4 {
+	m := make(Matrix4, 16)
+	m[Matrix4M00] = vec.X
+	m[Matrix4M11] = vec.Y
+	m[Matrix4M22] = vec.Z
+	m[Matrix4M33] = 1
 	return m
 }
 
