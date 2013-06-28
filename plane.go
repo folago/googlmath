@@ -14,11 +14,11 @@ type Plane struct {
 }
 
 func NewPlane(normal Vector3, d float32) *Plane {
-	return &Plane{normal.Cpy().Nor(), d}
+	return &Plane{normal.Nor(), d}
 }
 
 func (p *Plane) Cpy() *Plane {
-	return &Plane{p.Normal.Cpy(), p.D}
+	return &Plane{p.Normal, p.D}
 }
 
 // Sets the plane normal and distance to the origin based on the three given points which are considered to be on the plane.
