@@ -1,3 +1,5 @@
 language: go
 go: 1.1.1
-script: go test -v -race -bench=. -cpu=2 ./...
+install:
+- go get -u launchpad.net/gocheck
+script: go test -v -gocheck.v -race -bench=. -cpu=2 ./...

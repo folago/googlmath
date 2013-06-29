@@ -1,29 +1,37 @@
 package math
 
 import (
-	"testing"
+	. "launchpad.net/gocheck"
 )
 
-func TestEllipse(t *testing.T) {
-	e := NewEllipse(0, 0, 1, 1)
+type EllipseContainTestValue struct {
+	X, Y     float32
+	Expected bool
+}
 
+type EllipseTestSuite struct {
+	e                *Ellipse
+	containTestTable []EllipseContainTestValue
+}
+
+var _ = Suite(EllipseTestSuite{})
+
+func (s *EllipseTestSuite) SetUpTest(c *C) {
+	s.e = NewEllipse(0, 0, 1, 1)
+	s.containTestTable = []EllipseContainTestValue{
+		EllipseContainTestValue{0, 0, true},
+		EllipseContainTestValue{1, 0, true},
+		EllipseContainTestValue{-2, -2, false},
+		EllipseContainTestValue{2, 0, false},
+	}
+}
+
+func (s *EllipseTestSuite) TestEllipse(c *C) {
 	// Contains
-	if e.Contains(0, 0) == false {
-		t.Errorf("%v should contain Vector2{0,0}", e)
-	}
-	if e.Contains(1, 0) == false {
-		t.Errorf("%v should contain Vector2{1,0}", e)
-	}
-	if e.Contains(-2, -2) == true {
-		t.Errorf("%v should not contain Vector2{-2,-2}", e)
-	}
-	if e.Contains(2, 0) == true {
-		t.Errorf("%v should not contain Vector2{2,0}", e)
+	for i := range s.containTestTable {
+		c.Assert(s.e.Contains(s.containTestTable[i].X, s.containTestTable[i].Y), Equals, s.containTestTable[i].Expected)
 	}
 
 	// Set
-	e.Set(1, 1.1, 2.0, 2.2)
-	if e.X != 1 && e.Y != 1.1 && e.Width != 2.0 && e.Height != 2.2 {
-		t.Errorf("%v should be Circle{1,1.1,2.0,2.2}", e)
-	}
+	c.Assert(s.e.Set(1, 1.1, 2.0, 2.2), Equals, NewEllipse(1, 1.1, 2.0, 2.2))
 }

@@ -1,21 +1,32 @@
 package math
 
 import (
-	"testing"
+	. "launchpad.net/gocheck"
 )
 
-func TestIntersectorIsPointInTriangle(t *testing.T) {
-	point := Vec3(0.5, 0.5, 0)
-	t1 := Vec3(0, 0, 0)
-	t2 := Vec3(1, 1, 0)
-	t3 := Vec3(0, 1, 0)
+type IsPointInTriangleTestValue struct {
+	Point      Vector3
+	T1, T2, T3 Vector3
+	Expected   bool
+}
 
-	if IsPointInTriangle(point, t1, t2, t3) == false {
-		t.Errorf("Point %+v should be in Triangle(%+v,%+v,%+v)", point, t1, t2, t3)
+type IntersectorTestSuite struct {
+	containTestTable []IsPointInTriangleTestValue
+}
+
+var _ = Suite(IntersectorTestSuite{})
+
+func (s *IntersectorTestSuite) SetUpTest(c *C) {
+	s.containTestTable = []IsPointInTriangleTestValue{
+		IsPointInTriangleTestValue{Vec3(0.5, 0.5, 0), Vec3(0, 0, 0), Vec3(1, 1, 0), Vec3(0, 1, 0), true},
+		IsPointInTriangleTestValue{Vec3(2, 0.5, 0), Vec3(0, 0, 0), Vec3(1, 1, 0), Vec3(0, 1, 0), false},
 	}
+}
 
-	point.X = 2
-	if IsPointInTriangle(point, t1, t2, t3) == true {
-		t.Errorf("Point %+v should not be in Triangle(%+v,%+v,%+v)", point, t1, t2, t3)
+func (s *IntersectorTestSuite) TestIsPointInTriangle(c *C) {
+
+	for i := range s.containTestTable {
+		value := s.containTestTable[i]
+		c.Assert(IsPointInTriangle(value.Point, value.T1, value.T2, value.T3), Equals, value.Expected)
 	}
 }
