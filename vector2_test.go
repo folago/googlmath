@@ -1,247 +1,153 @@
 package math
 
 import (
-	"testing"
+	. "launchpad.net/gocheck"
 )
 
-func TestVec2(t *testing.T) {
-	var x float32 = 1.23
-	var y float32 = -3.21
-	vec := Vec2(x, y)
-	if x != vec.X {
-		t.Errorf("%+v should be equal to %+v", x, vec.X)
-	}
-	if y != vec.Y {
-		t.Errorf("%+v should be equal to %+v", y, vec.Y)
-	}
+type Vector2TestSuite struct {
+	vec Vector2
 }
 
-func TestVec2SetVec2(t *testing.T) {
-	var x float32 = -2
-	var y float32 = 0
-	vec := Vec2(x, y)
-	vec.SetVec2(Vec2(1, 1))
-	if vec.X != 1 || vec.Y != 1 {
-		t.Errorf("%+v should be equal to Vector2(1,1)", vec)
-	}
+var _ = Suite(Vector2TestSuite{})
+
+func (s *Vector2TestSuite) Vec2(c *C) {
+	s.vec = Vec2(1.23, -3.21)
+	c.Assert(s.vec, Equals, Vector2{1.23, -3.21})
 }
 
-func TestVec2Set(t *testing.T) {
-	var x float32 = -2
-	var y float32 = 0
-	vec := Vec2(x, y)
-	vec.Set(1, 1)
-	if vec.X != 1 || vec.Y != 1 {
-		t.Errorf("%+v should be equal to Vector2(1,1)", vec)
-	}
+func (s *Vector2TestSuite) Vector2Set(c *C) {
+	s.vec.Set(-2, 0)
+	c.Assert(s.vec, Equals, Vec2(-2, 0))
 }
 
-func TestVec2Cpy(t *testing.T) {
-	var x float32 = 1.23
-	var y float32 = -3.21
-	vec := Vec2(x, y)
-	vec2 := vec.Cpy()
-	if vec != vec2 {
-		t.Errorf("%+v should be equal to %+v", vec, vec2)
-	}
+func (s *Vector2TestSuite) Vector2SetVec(c *C) {
+	s.vec.SetVec2(Vec2(-2, 0))
+	c.Assert(s.vec, Equals, Vec2(-2, 0))
 }
 
-func TestVec2Len(t *testing.T) {
-	var x float32 = -2
-	var y float32 = 0
-	vec := Vec2(x, y)
-	length := vec.Len()
-	if length != 2 {
-		t.Errorf("Length %+v should be equal to 2", length)
-	}
+func (s *Vector2TestSuite) Vector2Cpy(c *C) {
+	vec2 := s.vec.Cpy()
+	c.Assert(s.vec, Equals, vec2)
 }
 
-func TestVec2Len2(t *testing.T) {
-	var x float32 = -2
-	var y float32 = 0
-	vec := Vec2(x, y)
-	length := vec.Len2()
-	if length != 4 {
-		t.Errorf("Length %+v should be equal to 4", length)
-	}
+func (s *Vector2TestSuite) Vector2Len(c *C) {
+	s.vec.Set(-2, 0)
+	c.Assert(s.vec.Len(), Equals, 2)
 }
 
-func TestVec2Sub(t *testing.T) {
-	var x float32 = -2
-	var y float32 = 0
-	vec := Vec2(x, y)
-	vec2 := Vec2(-2, -1)
-	vec = vec.Sub(vec2)
-	if vec.X != 0 || vec.Y != 1 {
-		t.Errorf("%+v should be equal to Vector2(0,1)", vec)
-	}
+func (s *Vector2TestSuite) Vector2Len2(c *C) {
+	s.vec.Set(-2, 0)
+	c.Assert(s.vec.Len2(), Equals, 4)
 }
 
-func TestVec2Clr(t *testing.T) {
-	var x float32 = -2
-	var y float32 = 0
-	vec := Vec2(x, y)
-	vec = vec.Clr()
-	if vec.X != 0 || vec.Y != 0 {
-		t.Errorf("%+v should be equal to Vector2(0,0)", vec)
-	}
+func (s *Vector2TestSuite) Vector2Sub(c *C) {
+	s.vec.Set(-2, 0)
+	c.Assert(s.vec.Sub(Vec2(-2, -1)), Equals, Vec2(0, 1))
 }
 
-func TestVec2Nor(t *testing.T) {
-	var x float32 = -2
-	var y float32 = 0
-	vec := Vec2(x, y)
-	vec = vec.Nor()
-	if vec.X != -1 || vec.Y != 0 {
-		t.Errorf("%+v should be equal to Vector2(-1,0)", vec)
-	}
+func (s *Vector2TestSuite) Vector2Clr(c *C) {
+	s.vec.Set(-2, 0)
+	c.Assert(s.vec.Clr(), Equals, Vec2(0, 0))
+	c.Assert(s.vec, Equals, Vec2(-2, 0))
 }
 
-func TestVec2Add(t *testing.T) {
-	var x float32 = -2
-	var y float32 = 0
-	vec := Vec2(x, y)
-	vec2 := Vec2(2, 2)
-	vec = vec.Add(vec2)
-	if vec.X != 0 || vec.Y != 2 {
-		t.Errorf("%+v should be equal to Vector2(0,2)", vec)
-	}
+func (s *Vector2TestSuite) Vector2Nor(c *C) {
+	s.vec.Set(-2, 0)
+	c.Assert(s.vec.Nor(), Equals, Vec2(-1, 0))
 }
 
-func TestVec2Dot(t *testing.T) {
-	a := Vec2(2, 5)
-	b := Vec2(-3, 1)
-	dot := a.Dot(b)
-	if dot != -1.0 {
-		t.Errorf("%g should be equal to %g", dot, -1.0)
-	}
+func (s *Vector2TestSuite) Vector2Add(c *C) {
+	s.vec.Set(-2, 0)
+	c.Assert(s.vec.Add(Vec2(2, 2)), Equals, Vec2(0, 2))
 }
 
-func TestVec2Mul(t *testing.T) {
-	var x float32 = -2
-	var y float32 = 0
-	vec := Vec2(x, y)
-	vec2 := Vec2(-2, 2)
-	vec = vec.Mul(vec2)
-	if vec.X != 4 || vec.Y != 0 {
-		t.Errorf("%+v should be equal to Vector2(4,0)", vec)
-	}
+func (s *Vector2TestSuite) Vector2Dot(c *C) {
+	s.vec.Set(-2, 0)
+	c.Assert(s.vec.Dot(Vec2(-3, 1)), Equals, -1.0)
 }
 
-func TestVec2Div(t *testing.T) {
-	var x float32 = -2
-	var y float32 = 0
-	vec := Vec2(x, y)
-	vec2 := Vec2(-2, 2)
-	vec = vec.Div(vec2)
-	if vec.X != 1 || vec.Y != 0 {
-		t.Errorf("%+v should be equal to Vector2(1,0)", vec)
-	}
+func (s *Vector2TestSuite) Vector2Mul(c *C) {
+	s.vec.Set(-2, 0)
+	c.Assert(s.vec.Mul(Vec2(-2, 2)), Equals, Vec2(4, 0))
 }
 
-func TestVec2Scale(t *testing.T) {
-	var x float32 = -2
-	var y float32 = 0
-	vec := Vec2(x, y)
-	vec = vec.Scale(2)
-	if vec.X != -4 || vec.Y != 0 {
-		t.Errorf("%+v should be equal to Vector2(-4,0)", vec)
-	}
+func (s *Vector2TestSuite) Vector2Div(c *C) {
+	s.vec.Set(-2, 0)
+	c.Assert(s.vec.Div(Vec2(-2, 2)), Equals, Vec2(1, 0))
 }
 
-func TestVec2Dst(t *testing.T) {
-	var x float32 = -2
-	var y float32 = 0
-	vec := Vec2(x, y)
-	vec2 := Vec2(0, 0)
-	dst := vec.Dst(vec2)
-	if dst != 2 {
-		t.Errorf("The distance between %+v and %+v should be %+v", vec, vec2, 2)
-	}
+func (s *Vector2TestSuite) Vector2Scale(c *C) {
+	s.vec.Set(-2, 0)
+	c.Assert(s.vec.Scale(2), Equals, Vec2(-4, 0))
 }
 
-func TestVec2Dst2(t *testing.T) {
-	var x float32 = -2
-	var y float32 = 0
-	vec := Vec2(x, y)
-	vec2 := Vec2(0, 0)
-	dst := vec.Dst2(vec2)
-	if dst != 4 {
-		t.Errorf("The distance between %+v and %+v should be %+v", vec, vec2, 4)
-	}
+func (s *Vector2TestSuite) Vector2Dst(c *C) {
+	s.vec.Set(-2, 0)
+	c.Assert(s.vec.Dst(Vec2(0, 0)), Equals, 2)
 }
 
-func TestVec2Limit(t *testing.T) {
-	var x float32 = -2
-	var y float32 = 0
-	vec := Vec2(x, y)
-	vec = vec.Limit(1)
-	if vec.X != -1 || vec.Y != 0 {
-		t.Errorf("%+v should be equal to Vector2(-1,0)", vec)
-	}
+func (s *Vector2TestSuite) Vector2Dst2(c *C) {
+	s.vec.Set(-2, 0)
+	c.Assert(s.vec.Dst2(Vec2(0, 0)), Equals, 4)
+}
+
+func (s *Vector2TestSuite) Vector2Limit(c *C) {
+	s.vec.Set(-2, 0)
+	c.Assert(s.vec.Limit(1), Equals, Vec2(-1, 0))
 }
 
 // TODO MulMatrix
 
-func TestVec2Crs(t *testing.T) {
-	a := Vec2(5, 1)
-	b := Vec2(-1, 0)
-	crs := a.Crs(b)
-	if crs != 1.0 {
-		t.Errorf("%+v should be equal to %g", crs, 1.0)
-	}
+func (s *Vector2TestSuite) Vector2Crs(c *C) {
+	s.vec.Set(5, 1)
+	c.Assert(s.vec.Crs(Vec2(-1, 0)), Equals, 1.0)
 }
 
-func TestVec2Angle(t *testing.T) {
-	a := Vec2(1, 1)
-	angle := a.Angle()
-	if angle != 45.0 {
-		t.Errorf("%g should be equal to %g", angle, 45.0)
-	}
+func (s *Vector2TestSuite) Vector2Angle(c *C) {
+	s.vec.Set(1, 1)
+	c.Assert(s.vec.Angle(), Equals, 45.0)
 }
 
-func TestVec2SetAngle(t *testing.T) {
-	a := Vec2(2, 0)
-	b := a.SetAngle(90)
-	if int(b.X*1000)/1000 != 0 || b.Y != 2 {
-		t.Errorf("%+v should be equal to Vector2(X:%g,Y:%g)", b, 0, 2)
-	}
+func (s *Vector2TestSuite) Vector2SetAngle(c *C) {
+	s.vec.Set(2, 0)
+	s.vec.SetAngle(90)
+	c.Assert(int(s.vec.X*1000)/1000, Equals, 0)
+	c.Assert(s.vec.Y, Equals, 2)
 }
 
-func TestVec2Rotate(t *testing.T) {
+func (s *Vector2TestSuite) Vector2Rotate(c *C) {
 	var angle float32 = 45
 	var x float32 = 5
 	var y float32 = -2
 	xResult := Cos(angle*DegreeToRadians)*x - Sin(angle*DegreeToRadians)*y
 	yResult := Sin(angle*DegreeToRadians)*x + Cos(angle*DegreeToRadians)*y
+	s.vec.Set(x, y)
 
-	a := Vec2(x, y)
-	b := a.Rotate(angle)
-	if b.X != xResult || b.Y != yResult {
-		t.Errorf("%+v should be equal to Vector2(X:%g,Y:%g)", b, xResult, yResult)
-	}
+	vec := s.vec.Rotate(angle)
+	c.Assert(vec.X, Equals, xResult)
+	c.Assert(vec.Y, Equals, yResult)
 }
 
-func TestVec2Lerp(t *testing.T) {
+func (s *Vector2TestSuite) Vector2Lerp(c *C) {
 	var alpha float32 = 0.5
-	a := Vec2(1, 1)
-	b := Vec2(-2, 0)
-	c := a.Lerp(b, alpha)
+	v1 := Vec2(1, 1)
+	v2 := Vec2(-2, 0)
+	v3 := v1.Lerp(v2, alpha)
 
-	xResult := a.X*(1-alpha) + b.X*alpha
-	yResult := a.Y*(1-alpha) + b.Y*alpha
-	if c.X != xResult || c.Y != yResult {
-		t.Errorf("%+v should be equal to Vector2(X:%g,Y:%g)", c, xResult, yResult)
-	}
+	xResult := v1.X*(1-alpha) + v2.X*alpha
+	yResult := v1.Y*(1-alpha) + v2.Y*alpha
+
+	c.Assert(v3.X, Equals, xResult)
+	c.Assert(v3.Y, Equals, yResult)
 }
 
 // ### Benchmarks ###
 
-func BenchmarkVector2Add(b *testing.B) {
+func (s *Vector2TestSuite) BenchmarkVector2Add(c *C) {
 	vec1 := Vec2(0, 0)
 	vec2 := Vec2(1, 1)
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	c.ResetTimer()
+	for i := 0; i < c.N; i++ {
 		vec1.Add(vec2)
 	}
 }
@@ -261,11 +167,11 @@ func (vec Vector2NoPointer) Add(vec2 Vector2NoPointer) Vector2NoPointer {
 	return vec
 }
 
-func BenchmarkVector2NoPointerAdd(b *testing.B) {
+func (s *Vector2TestSuite) BenchmarkVector2NoPointerAdd(c *C) {
 	vec1 := Vector2NoPointer{0, 0}
 	vec2 := Vector2NoPointer{1, 1}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	c.ResetTimer()
+	for i := 0; i < c.N; i++ {
 		vec1.Add(vec2)
 	}
 }
@@ -280,11 +186,11 @@ func (vec *Vector2Pointer) Add(vec2 *Vector2Pointer) *Vector2Pointer {
 	return vec
 }
 
-func BenchmarkVector2PointerAdd(b *testing.B) {
+func (s *Vector2TestSuite) BenchmarkVector2PointerAdd(c *C) {
 	vec1 := &Vector2Pointer{0, 0}
 	vec2 := &Vector2Pointer{1, 1}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	c.ResetTimer()
+	for i := 0; i < c.N; i++ {
 		vec1.Add(vec2)
 	}
 }

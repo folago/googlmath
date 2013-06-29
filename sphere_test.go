@@ -1,31 +1,30 @@
 package math
 
 import (
-	"testing"
+	. "launchpad.net/gocheck"
 )
 
-func TestNewSphere(t *testing.T) {
-	var radius float32 = 12.0
-	var center Vector3 = Vec3(1, 2, 3)
-	sphere := NewSphere(center, radius)
-	if sphere.Radius != radius {
-		t.Errorf("Radius %g should be equal to %g", sphere.Radius, radius)
-	}
-	if sphere.Center != center {
-		t.Errorf("Center %g should be equal to %g", sphere.Center, center)
+type SphereOverlapsTestValue struct {
+	Sphere, Sphere2 *Sphere
+	Expected        bool
+}
+
+type SphereTestSuite struct {
+	containTestTable []SphereOverlapsTestValue
+}
+
+var _ = Suite(SphereTestSuite{})
+
+func (s *SphereTestSuite) SetUpTest(c *C) {
+	s.containTestTable = []SphereOverlapsTestValue{
+		SphereOverlapsTestValue{NewSphere(Vec3(1, -2, 0), 12.0), NewSphere(Vec3(0, 2, 0), 30.0), true},
 	}
 }
 
-func TestSphereOverlaps(t *testing.T) {
-	var radius float32 = 12.0
-	var center Vector3 = Vec3(1, -2, 0)
-	sphere := NewSphere(center, radius)
+func (s *SphereTestSuite) Overlaps(c *C) {
 
-	var radius2 float32 = 30.0
-	var center2 Vector3 = Vec3(0, 2, 0)
-	sphere2 := NewSphere(center2, radius2)
-
-	if sphere.Overlaps(sphere2) != true {
-		t.Errorf("Sphere %+v should overlaps Sphere %+v", sphere, sphere2)
+	for i := range s.containTestTable {
+		value := s.containTestTable[i]
+		c.Assert(value.Sphere.Overlaps(value.Sphere2), Equals, value.Expected)
 	}
 }
