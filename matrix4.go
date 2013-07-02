@@ -66,6 +66,62 @@ func NewScaleMatrix4(vec Vector3) Matrix4 {
 	return m
 }
 
+// Sets the matrix to a projection matrix with a near- and far plane, a field of view in degrees and an aspect ratio.
+func NewProjectionMatrix4(near, far, fov, aspectRatio float32) Matrix4 {
+	m := NewIdentityMatrix4()
+	l_fd := 1.0 / Tan((fov*(Pi/180))/2.0)
+	l_a1 := (far + near) / (near - far)
+	l_a2 := (2 * far * near) / (near - far)
+	m[Matrix4M00] = l_fd / aspectRatio
+	m[Matrix4M10] = 0
+	m[Matrix4M20] = 0
+	m[Matrix4M30] = 0
+	m[Matrix4M01] = 0
+	m[Matrix4M11] = l_fd
+	m[Matrix4M21] = 0
+	m[Matrix4M31] = 0
+	m[Matrix4M02] = 0
+	m[Matrix4M12] = 0
+	m[Matrix4M22] = l_a1
+	m[Matrix4M32] = -1
+	m[Matrix4M03] = 0
+	m[Matrix4M13] = 0
+	m[Matrix4M23] = l_a2
+	m[Matrix4M33] = 0
+	return m
+}
+
+// Sets the matrix to an orthographic projection like glOrtho (http://www.opengl.org/sdk/docs/man/xhtml/glOrtho.xml) following the OpenGL equivalent
+func NewOrthoMatrix4(left, right, bottom, top, near, far float32) Matrix4 {
+	m := NewIdentityMatrix4()
+
+	x_orth := 2 / (right - left)
+	y_orth := 2 / (top - bottom)
+	z_orth := -2 / (far - near)
+
+	tx := -(right + left) / (right - left)
+	ty := -(top + bottom) / (top - bottom)
+	tz := -(far + near) / (far - near)
+
+	m[Matrix4M00] = x_orth
+	m[Matrix4M10] = 0
+	m[Matrix4M20] = 0
+	m[Matrix4M30] = 0
+	m[Matrix4M01] = 0
+	m[Matrix4M11] = y_orth
+	m[Matrix4M21] = 0
+	m[Matrix4M31] = 0
+	m[Matrix4M02] = 0
+	m[Matrix4M12] = 0
+	m[Matrix4M22] = z_orth
+	m[Matrix4M32] = 0
+	m[Matrix4M03] = tx
+	m[Matrix4M13] = ty
+	m[Matrix4M23] = tz
+	m[Matrix4M33] = 1
+	return m
+}
+
 // ### Set Matrix4 functions, which change the matrix to a specific matrix type ###
 
 func (m Matrix4) Set(mat Matrix4) Matrix4 {
