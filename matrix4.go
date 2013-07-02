@@ -142,6 +142,13 @@ func NewLookAtMatrix4(direction, up Vector3) Matrix4 {
 	return m
 }
 
+// Sets this matrix to a look at matrix with the given position, target and up vector.
+func NewLookAtMatrix4WithPosition(position, target, up Vector3) Matrix4 {
+	tmpVec := target.Sub(position)
+	m := NewLookAtMatrix4(tmpVec, up)
+	return m.Mul(NewTranslationMatrix4(position.Scale(-1)))
+}
+
 // ### Set Matrix4 functions, which change the matrix to a specific matrix type ###
 
 func (m Matrix4) Set(mat Matrix4) Matrix4 {
