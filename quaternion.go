@@ -102,10 +102,10 @@ func (q *Quaternion) SetFromAxis(x, y, z, angle float32) *Quaternion {
 	return q.Set(q.X*lSin, q.Y*lSin, q.Z*lSin, lCos).Nor()
 }
 
-func (q *Quaternion) SetFromMatrix(m *Matrix4) *Quaternion {
-	return q.SetFromAxes((*m)[Matrix4M00], (*m)[Matrix4M01], (*m)[Matrix4M02], (*m)[Matrix4M10],
-		(*m)[Matrix4M11], (*m)[Matrix4M12], (*m)[Matrix4M20], (*m)[Matrix4M21],
-		(*m)[Matrix4M22])
+func (q *Quaternion) SetFromMatrix(m Matrix4) *Quaternion {
+	return q.SetFromAxes(m[Matrix4M00], m[Matrix4M01], m[Matrix4M02], m[Matrix4M10],
+		m[Matrix4M11], m[Matrix4M12], m[Matrix4M20], m[Matrix4M21],
+		m[Matrix4M22])
 }
 
 // Sets the Quaternion from the given x-, y- and z-axis which have to be orthonormal.
