@@ -122,6 +122,26 @@ func NewOrthoMatrix4(left, right, bottom, top, near, far float32) Matrix4 {
 	return m
 }
 
+func NewLookAtMatrix4(direction, up Vector3) Matrix4 {
+	l_vez := direction.Nor()
+	l_vex := direction.Nor()
+	l_vex = l_vex.Crs(up).Nor()
+	l_vey := l_vex.Crs(l_vez).Nor()
+	m := NewIdentityMatrix4()
+
+	m[Matrix4M00] = l_vex.X
+	m[Matrix4M01] = l_vex.Y
+	m[Matrix4M02] = l_vex.Z
+	m[Matrix4M10] = l_vey.X
+	m[Matrix4M11] = l_vey.Y
+	m[Matrix4M12] = l_vey.Z
+	m[Matrix4M20] = -l_vez.X
+	m[Matrix4M21] = -l_vez.Y
+	m[Matrix4M22] = -l_vez.Z
+
+	return m
+}
+
 // ### Set Matrix4 functions, which change the matrix to a specific matrix type ###
 
 func (m Matrix4) Set(mat Matrix4) Matrix4 {
