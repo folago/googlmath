@@ -102,10 +102,8 @@ func (q *Quaternion) SetFromAxis(x, y, z, angle float32) *Quaternion {
 	return q.Set(q.X*lSin, q.Y*lSin, q.Z*lSin, lCos).Nor()
 }
 
-func (q *Quaternion) SetFromMatrix(m Matrix4) *Quaternion {
-	return q.SetFromAxes(m[Matrix4M00], m[Matrix4M01], m[Matrix4M02], m[Matrix4M10],
-		m[Matrix4M11], m[Matrix4M12], m[Matrix4M20], m[Matrix4M21],
-		m[Matrix4M22])
+func (q *Quaternion) SetFromMatrix(m *Matrix4) *Quaternion {
+	return q.SetFromAxes(m.M11, m.M12, m.M13, m.M21, m.M22, m.M23, m.M31, m.M32, m.M33)
 }
 
 // Sets the Quaternion from the given x-, y- and z-axis which have to be orthonormal.
@@ -211,7 +209,7 @@ func (q *Quaternion) Scale(scalar float32) *Quaternion {
 }
 
 // Fills a 4x4 matrix with the rotation matrix represented by this quaternion.
-func (q *Quaternion) Matrix() Matrix4 {
+func (q *Quaternion) Matrix() *Matrix4 {
 	xx := q.X * q.X
 	xy := q.X * q.Y
 	xz := q.X * q.Z
@@ -223,21 +221,21 @@ func (q *Quaternion) Matrix() Matrix4 {
 	zw := q.Z * q.W
 	// Set matrix from quaternion
 	matrix := NewIdentityMatrix4()
-	matrix[Matrix4M00] = 1 - 2*(yy+zz)
-	matrix[Matrix4M01] = 2 * (xy - zw)
-	matrix[Matrix4M02] = 2 * (xz + yw)
-	matrix[Matrix4M03] = 0
-	matrix[Matrix4M10] = 2 * (xy + zw)
-	matrix[Matrix4M11] = 1 - 2*(xx+zz)
-	matrix[Matrix4M12] = 2 * (yz - xw)
-	matrix[Matrix4M13] = 0
-	matrix[Matrix4M20] = 2 * (xz - yw)
-	matrix[Matrix4M21] = 2 * (yz + xw)
-	matrix[Matrix4M22] = 1 - 2*(xx+yy)
-	matrix[Matrix4M23] = 0
-	matrix[Matrix4M30] = 0
-	matrix[Matrix4M31] = 0
-	matrix[Matrix4M32] = 0
-	matrix[Matrix4M33] = 1
+	matrix.M11 = 1 - 2*(yy+zz)
+	matrix.M21 = 2 * (xy - zw)
+	matrix.M31 = 2 * (xz + yw)
+	matrix.M41 = 0
+	matrix.M12 = 2 * (xy + zw)
+	matrix.M22 = 1 - 2*(xx+zz)
+	matrix.M32 = 2 * (yz - xw)
+	matrix.M42 = 0
+	matrix.M13 = 2 * (xz - yw)
+	matrix.M23 = 2 * (yz + xw)
+	matrix.M33 = 1 - 2*(xx+yy)
+	matrix.M43 = 0
+	matrix.M14 = 0
+	matrix.M24 = 0
+	matrix.M34 = 0
+	matrix.M44 = 1
 	return matrix
 }

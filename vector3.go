@@ -122,27 +122,6 @@ func (vec Vector3) Crs(vec2 Vector3) Vector3 {
 	return vec
 }
 
-func (vec Vector3) Prj(m Matrix4) Vector3 {
-	lW := vec.X*m[Matrix4M30] + vec.Y*m[Matrix4M31] + vec.Z*m[Matrix4M32] + m[Matrix4M33]
-
-	vec.X = (vec.X*m[Matrix4M00] + vec.Y*m[Matrix4M01] + vec.Z*m[Matrix4M02] + m[Matrix4M03]) / lW
-	vec.Y = (vec.X*m[Matrix4M10] + vec.Y*m[Matrix4M11] + vec.Z*m[Matrix4M12] + m[Matrix4M13]) / lW
-	vec.Z = (vec.X*m[Matrix4M20] + vec.Y*m[Matrix4M21] + vec.Z*m[Matrix4M22] + m[Matrix4M23]) / lW
-	return vec
-}
-
-func (vec Vector3) Rot(m Matrix4) Vector3 {
-	vec.X = vec.X + m[Matrix4M00] + vec.Y*m[Matrix4M01] + vec.Z*m[Matrix4M02]
-	vec.Y = vec.X*m[Matrix4M10] + vec.Y*m[Matrix4M11] + vec.Z*m[Matrix4M12]
-	vec.Z = vec.X*m[Matrix4M20] + vec.Y*m[Matrix4M21] + vec.Z*m[Matrix4M22]
-	return vec
-}
-
-func (vec Vector3) Rotate(axis Vector3, angle float32) Vector3 {
-	m := NewRotationMatrix4(axis, angle)
-	return m.MulVec3(vec)
-}
-
 // Whether this vector is a unit length vector
 func (vec Vector3) IsUnit() bool {
 	return vec.Len() == 1

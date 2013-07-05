@@ -8,7 +8,7 @@ type Vector3TestSuite struct {
 	vec Vector3
 }
 
-var _ = Suite(Vector3TestSuite{})
+var _ = Suite(&Vector3TestSuite{})
 
 func (s *Vector3TestSuite) Vec3(c *C) {
 	s.vec = Vec3(1.23, -3.21, -0.0)

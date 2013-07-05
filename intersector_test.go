@@ -14,7 +14,7 @@ type IntersectorTestSuite struct {
 	containTestTable []IsPointInTriangleTestValue
 }
 
-var _ = Suite(IntersectorTestSuite{})
+var _ = Suite(&IntersectorTestSuite{})
 
 func (s *IntersectorTestSuite) SetUpTest(c *C) {
 	s.containTestTable = []IsPointInTriangleTestValue{

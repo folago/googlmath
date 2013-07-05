@@ -134,16 +134,3 @@ func (box *BoundingBox) Clr() *BoundingBox {
 	box.Max = box.Max.Clr()
 	return box
 }
-
-// Multiplies the bounding box by the given matrix.
-// This is achieved by multiplying the 8 corner points and then calculating the minimum and maximum vectors from the transformed points.
-func (box *BoundingBox) Mul(matrix Matrix4) *BoundingBox {
-	corners := box.GetCorners()
-	box.Inf()
-	for _, vec := range corners {
-		vec = matrix.MulVec3(vec)
-		box.Min.Set(Min(box.Min.X, vec.X), Min(box.Min.Y, vec.Y), Min(box.Min.Z, vec.Z))
-		box.Max.Set(Max(box.Max.X, vec.X), Max(box.Max.Y, vec.Y), Max(box.Max.Z, vec.Z))
-	}
-	return box
-}

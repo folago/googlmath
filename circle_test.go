@@ -14,7 +14,7 @@ type CircleTestSuite struct {
 	containTestTable []CircleContainTestValue
 }
 
-var _ = Suite(CircleTestSuite{})
+var _ = Suite(&CircleTestSuite{})
 
 func (s *CircleTestSuite) SetUpTest(c *C) {
 	s.circle = Circ(0, 0, 1.0)

@@ -13,7 +13,7 @@ type SphereTestSuite struct {
 	containTestTable []SphereOverlapsTestValue
 }
 
-var _ = Suite(SphereTestSuite{})
+var _ = Suite(&SphereTestSuite{})
 
 func (s *SphereTestSuite) SetUpTest(c *C) {
 	s.containTestTable = []SphereOverlapsTestValue{

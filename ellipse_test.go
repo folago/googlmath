@@ -14,7 +14,7 @@ type EllipseTestSuite struct {
 	containTestTable []EllipseContainTestValue
 }
 
-var _ = Suite(EllipseTestSuite{})
+var _ = Suite(&EllipseTestSuite{})
 
 func (s *EllipseTestSuite) SetUpTest(c *C) {
 	s.e = NewEllipse(0, 0, 1, 1)
@@ -33,5 +33,5 @@ func (s *EllipseTestSuite) TestEllipse(c *C) {
 	}
 
 	// Set
-	c.Assert(s.e.Set(1, 1.1, 2.0, 2.2), Equals, NewEllipse(1, 1.1, 2.0, 2.2))
+	c.Assert(s.e.Set(1, 1.1, 2.0, 2.2), DeepEquals, NewEllipse(1, 1.1, 2.0, 2.2))
 }

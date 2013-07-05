@@ -31,10 +31,12 @@ func NewFrustum() *Frustum {
 		planePoints: make([]Vector3, len(clipSpacePlanePoints))}
 }
 
-func (f *Frustum) Update(invProjectionView Matrix4) {
+func (f *Frustum) Update(invProjectionView *Matrix4) {
+	/* TODO
 	for i := range clipSpacePlanePoints {
 		f.planePoints[i] = invProjectionView.Project(clipSpacePlanePoints[i])
 	}
+	*/
 	f.Near.Set(f.planePoints[1], f.planePoints[0], f.planePoints[2])
 	f.Far.Set(f.planePoints[4], f.planePoints[5], f.planePoints[7])
 	f.Left.Set(f.planePoints[0], f.planePoints[4], f.planePoints[3])
