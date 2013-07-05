@@ -1,5 +1,9 @@
 package math
 
+import (
+	"errors"
+)
+
 type Matrix4 struct {
 	M11, M12, M13, M14 float32
 	M21, M22, M23, M24 float32
@@ -118,4 +122,78 @@ func (m *Matrix4) Scale(scalar Vector3) *Matrix4 {
 		M44: 1,
 	}
 	return m.Mul(s)
+}
+
+func (m *Matrix4) Invert() (*Matrix4, error) {
+	det := m.Determinant()
+	if det == 0 {
+		return nil, errors.New("non-invertible matrix")
+	}
+
+	tmp := &Matrix4{}
+
+	tmp.M11 = m.M32*m.M43*m.M24 - m.M42*m.M33*m.M24 + m.M42*m.M23*m.M34 - m.M22*m.M43*m.M34 - m.M32*m.M23*m.M44 + m.M22*m.M33*m.M44
+	tmp.M21 = m.M41*m.M33*m.M24 - m.M31*m.M43*m.M24 - m.M41*m.M23*m.M34 + m.M21*m.M43*m.M34 + m.M31*m.M23*m.M44 - m.M21*m.M33*m.M44
+	tmp.M31 = m.M31*m.M42*m.M24 - m.M41*m.M32*m.M24 + m.M41*m.M22*m.M34 - m.M21*m.M42*m.M34 - m.M31*m.M22*m.M44 + m.M21*m.M32*m.M44
+	tmp.M41 = m.M41*m.M32*m.M23 - m.M31*m.M42*m.M23 - m.M41*m.M22*m.M33 + m.M21*m.M42*m.M33 + m.M31*m.M22*m.M43 - m.M21*m.M32*m.M43
+	tmp.M12 = m.M42*m.M33*m.M14 - m.M32*m.M43*m.M14 - m.M42*m.M13*m.M34 + m.M12*m.M43*m.M34 + m.M32*m.M13*m.M44 - m.M12*m.M33*m.M44
+	tmp.M22 = m.M31*m.M43*m.M14 - m.M41*m.M33*m.M14 + m.M41*m.M13*m.M34 - m.M11*m.M43*m.M34 - m.M31*m.M13*m.M44 + m.M11*m.M33*m.M44
+	tmp.M32 = m.M41*m.M32*m.M14 - m.M31*m.M42*m.M14 - m.M41*m.M12*m.M34 + m.M11*m.M42*m.M34 + m.M31*m.M12*m.M44 - m.M11*m.M32*m.M44
+	tmp.M42 = m.M31*m.M42*m.M13 - m.M41*m.M32*m.M13 + m.M41*m.M12*m.M33 - m.M11*m.M42*m.M33 - m.M31*m.M12*m.M43 + m.M11*m.M32*m.M43
+	tmp.M13 = m.M22*m.M43*m.M14 - m.M42*m.M23*m.M14 + m.M42*m.M13*m.M24 - m.M12*m.M43*m.M24 - m.M22*m.M13*m.M44 + m.M12*m.M23*m.M44
+	tmp.M23 = m.M41*m.M23*m.M14 - m.M21*m.M43*m.M14 - m.M41*m.M13*m.M24 + m.M11*m.M43*m.M24 + m.M21*m.M13*m.M44 - m.M11*m.M23*m.M44
+	tmp.M33 = m.M21*m.M42*m.M14 - m.M41*m.M22*m.M14 + m.M41*m.M12*m.M24 - m.M11*m.M42*m.M24 - m.M21*m.M12*m.M44 + m.M11*m.M22*m.M44
+	tmp.M43 = m.M41*m.M22*m.M13 - m.M21*m.M42*m.M13 - m.M41*m.M12*m.M23 + m.M11*m.M42*m.M23 + m.M21*m.M12*m.M43 - m.M11*m.M22*m.M43
+	tmp.M14 = m.M32*m.M23*m.M14 - m.M22*m.M33*m.M14 - m.M32*m.M13*m.M24 + m.M12*m.M33*m.M24 + m.M22*m.M13*m.M34 - m.M12*m.M23*m.M34
+	tmp.M24 = m.M21*m.M33*m.M14 - m.M31*m.M23*m.M14 + m.M31*m.M13*m.M24 - m.M11*m.M33*m.M24 - m.M21*m.M13*m.M34 + m.M11*m.M23*m.M34
+	tmp.M34 = m.M31*m.M22*m.M14 - m.M21*m.M32*m.M14 - m.M31*m.M12*m.M24 + m.M11*m.M32*m.M24 + m.M21*m.M12*m.M34 - m.M11*m.M22*m.M34
+	tmp.M44 = m.M21*m.M32*m.M13 - m.M31*m.M22*m.M13 + m.M31*m.M12*m.M23 - m.M11*m.M32*m.M23 - m.M21*m.M12*m.M33 + m.M11*m.M22*m.M33
+
+	inv_det := 1.0 / det
+	m.M11 = tmp.M11 * inv_det
+	m.M21 = tmp.M21 * inv_det
+	m.M31 = tmp.M31 * inv_det
+	m.M41 = tmp.M41 * inv_det
+	m.M12 = tmp.M12 * inv_det
+	m.M22 = tmp.M22 * inv_det
+	m.M32 = tmp.M32 * inv_det
+	m.M42 = tmp.M42 * inv_det
+	m.M13 = tmp.M13 * inv_det
+	m.M23 = tmp.M23 * inv_det
+	m.M33 = tmp.M33 * inv_det
+	m.M43 = tmp.M43 * inv_det
+	m.M14 = tmp.M14 * inv_det
+	m.M24 = tmp.M24 * inv_det
+	m.M34 = tmp.M34 * inv_det
+	m.M44 = tmp.M44 * inv_det
+
+	return m, nil
+}
+
+// The determinant of this matrix.
+func (m Matrix4) Determinant() float32 {
+	return m.M14*m.M23*m.M32*m.M41 -
+		m.M13*m.M24*m.M32*m.M41 -
+		m.M14*m.M22*m.M33*m.M41 +
+		m.M12*m.M24*m.M33*m.M41 +
+		m.M13*m.M22*m.M34*m.M41 -
+		m.M12*m.M23*m.M34*m.M41 -
+		m.M14*m.M23*m.M31*m.M41 +
+		m.M13*m.M24*m.M31*m.M41 +
+		m.M14*m.M21*m.M33*m.M41 -
+		m.M11*m.M24*m.M33*m.M41 -
+		m.M13*m.M21*m.M34*m.M41 +
+		m.M11*m.M23*m.M34*m.M41 +
+		m.M14*m.M22*m.M31*m.M43 -
+		m.M12*m.M24*m.M31*m.M43 -
+		m.M14*m.M21*m.M32*m.M43 +
+		m.M11*m.M24*m.M32*m.M43 +
+		m.M12*m.M21*m.M34*m.M43 -
+		m.M11*m.M22*m.M34*m.M43 -
+		m.M13*m.M22*m.M31*m.M44 +
+		m.M12*m.M23*m.M31*m.M44 +
+		m.M13*m.M21*m.M32*m.M44 -
+		m.M11*m.M23*m.M32*m.M44 -
+		m.M12*m.M21*m.M33*m.M44 +
+		m.M11*m.M22*m.M33*m.M44
 }

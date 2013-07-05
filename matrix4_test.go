@@ -51,6 +51,16 @@ type MatrixScaleTestValue struct {
 	Expected *Matrix4
 }
 
+type MatrixInvertTestValue struct {
+	Matrix   *Matrix4
+	Expected *Matrix4
+}
+
+type MatrixDeterminantTestValue struct {
+	Matrix   *Matrix4
+	Expected float32
+}
+
 type MatrixTestSuite struct {
 	perspectiveTestTable []MatrixPerspectiveTestValue
 	lookAtTestTable      []MatrixLookAtTestValue
@@ -60,6 +70,8 @@ type MatrixTestSuite struct {
 	mulTestTable         []MatrixMulTestValue
 	setTestTable         []MatrixSetTestValue
 	scaleTestTable       []MatrixScaleTestValue
+	invertTestTable      []MatrixInvertTestValue
+	determinantTestTable []MatrixDeterminantTestValue
 }
 
 var matrixTestSuite = Suite(&MatrixTestSuite{})
@@ -108,6 +120,14 @@ func (test *MatrixTestSuite) SetUpTest(c *C) {
 	test.scaleTestTable = []MatrixScaleTestValue{
 		MatrixScaleTestValue{Vec3(2.0, 3.3, -2.2), NewIdentityMatrix4(), &Matrix4{2.0, 0.0, 0.0, 0.0, 0.0, 3.3, 0.0, 0.0, -0.0, -0.0, -2.2, -0.0, 0.0, 0.0, 0.0, 1.0}},
 		MatrixScaleTestValue{Vec3(2.0, 3.3, -2.2), &Matrix4{0.2, 0.0, 0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.0, -0.02, 0.0, -1.0, -1.0, -1.0, 1.0}, &Matrix4{0.4, 0.0, 0.0, 0.0, 0.0, 0.66, 0.0, 0.0, -0.0, -0.0, 0.044, -0.0, -1.0, -1.0, -1.0, 1.0}},
+	}
+
+	test.invertTestTable = []MatrixInvertTestValue{
+		MatrixInvertTestValue{&Matrix4{0.2, 0.0, 0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.0, -0.02, 0.0, -1.0, -1.0, -1.0, 1.0}, &Matrix4{0.2, 0.0, 0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.0, -0.02, 0.0, 0.2, 0.2, -0.02, 1.0}},
+	}
+
+	test.determinantTestTable = []MatrixDeterminantTestValue{
+		MatrixDeterminantTestValue{&Matrix4{0.2, 0.0, 0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.0, -0.02, 0.0, -1.0, -1.0, -1.0, 1.0}, -0.0008},
 	}
 }
 
@@ -176,5 +196,22 @@ func (test *MatrixTestSuite) TestMatrixScale(c *C) {
 		value := test.scaleTestTable[i]
 		matrix := value.Matrix.Scale(value.Scalar)
 		c.Check(matrix, Matrix4Check, value.Expected)
+	}
+}
+
+func (test *MatrixTestSuite) TestMatrixInvert(c *C) {
+	for i := range test.invertTestTable {
+		value := test.invertTestTable[i]
+		matrix, err := value.Matrix.Invert()
+		c.Check(err, IsNil)
+		c.Check(matrix, Matrix4Check, value.Expected)
+	}
+}
+
+func (test *MatrixTestSuite) TestMatrixDeterminant(c *C) {
+	for i := range test.determinantTestTable {
+		value := test.determinantTestTable[i]
+		det := value.Matrix.Determinant()
+		c.Check(Float32Equals(det, value.Expected), Equals, true)
 	}
 }
