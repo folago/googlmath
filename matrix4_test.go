@@ -123,11 +123,14 @@ func (test *MatrixTestSuite) SetUpTest(c *C) {
 	}
 
 	test.invertTestTable = []MatrixInvertTestValue{
-		MatrixInvertTestValue{&Matrix4{0.2, 0.0, 0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.0, -0.02, 0.0, -1.0, -1.0, -1.0, 1.0}, &Matrix4{0.2, 0.0, 0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.0, -0.02, 0.0, 0.2, 0.2, -0.02, 1.0}},
+		MatrixInvertTestValue{NewIdentityMatrix4(), NewIdentityMatrix4()},
+		MatrixInvertTestValue{&Matrix4{1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -3.0, 2.2, 15.0, 1.0}, &Matrix4{1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 3.0, -2.2, -15.0, 1.0}},
 	}
 
 	test.determinantTestTable = []MatrixDeterminantTestValue{
 		MatrixDeterminantTestValue{&Matrix4{0.2, 0.0, 0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.0, -0.02, 0.0, -1.0, -1.0, -1.0, 1.0}, -0.0008},
+		MatrixDeterminantTestValue{NewIdentityMatrix4(), 1.0},
+		MatrixDeterminantTestValue{&Matrix4{1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -3.0, 2.2, 15.0, 1.0}, 1.0},
 	}
 }
 
