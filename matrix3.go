@@ -4,18 +4,6 @@ import (
 	"errors"
 )
 
-const (
-	Matrix3M00 = 0
-	Matrix3M01 = 3
-	Matrix3M02 = 6
-	Matrix3M10 = 1
-	Matrix3M11 = 4
-	Matrix3M12 = 7
-	Matrix3M20 = 2
-	Matrix3M21 = 5
-	Matrix3M22 = 8
-)
-
 type Matrix3 struct {
 	M11, M12, M13 float32
 	M21, M22, M23 float32
