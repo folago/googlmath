@@ -205,16 +205,16 @@ func (m *Matrix3) Values() []float32 {
 	return []float32{m.M11, m.M12, m.M13, m.M21, m.M22, m.M23, m.M31, m.M32, m.M33}
 }
 
-// Scale the matrix in the both the x and y components by the scalar value.
+// Scale the matrix in the both the x, y, z components by the scalar value.
 func (m *Matrix3) Scl(scale float32) *Matrix3 {
 	m.M11 *= scale
 	m.M22 *= scale
+	m.M33 *= scale
 	return m
 }
 
 // Transposes the current matrix.
 func (m *Matrix3) Transposes() *Matrix3 {
-	// Where MXY you do not have to change MXX
 	m.M21 = m.M12
 	m.M31 = m.M13
 	m.M12 = m.M21
