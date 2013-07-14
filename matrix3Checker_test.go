@@ -4,7 +4,7 @@ import (
 	. "launchpad.net/gocheck"
 )
 
-var Matrix3Check = &Matrix4Checker{}
+var Matrix3Check = &Matrix3Checker{}
 
 type Matrix3Checker struct{}
 
