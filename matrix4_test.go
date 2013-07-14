@@ -61,7 +61,7 @@ type MatrixDeterminantTestValue struct {
 	Expected float32
 }
 
-type MatrixTestSuite struct {
+type Matrix4TestSuite struct {
 	perspectiveTestTable []MatrixPerspectiveTestValue
 	lookAtTestTable      []MatrixLookAtTestValue
 	translateTestTable   []MatrixTranslateTestValue
@@ -74,9 +74,9 @@ type MatrixTestSuite struct {
 	determinantTestTable []MatrixDeterminantTestValue
 }
 
-var matrixTestSuite = Suite(&MatrixTestSuite{})
+var matrixTestSuite = Suite(&Matrix4TestSuite{})
 
-func (test *MatrixTestSuite) SetUpTest(c *C) {
+func (test *Matrix4TestSuite) SetUpTest(c *C) {
 	test.perspectiveTestTable = []MatrixPerspectiveTestValue{
 		MatrixPerspectiveTestValue{45.0, 4.0 / 3.0, 0.1, 100.0, &Matrix4{1.810660, 0.0, 0.0, 0.0, 0.0, 2.4142134, 0.0, 0.0, 0.0, 0.0, -1.002002, -1.0, 0.0, 0.0, -0.2002002, 0.0}},
 		MatrixPerspectiveTestValue{90.0, 16.0 / 9.0, -1.0, 1.0, &Matrix4{0.562500, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, -0.0, -1.0, 0.0, 0.0, 1.0, 0.0}},
@@ -134,7 +134,7 @@ func (test *MatrixTestSuite) SetUpTest(c *C) {
 	}
 }
 
-func (test *MatrixTestSuite) TestMatrixPerspective(c *C) {
+func (test *Matrix4TestSuite) TestMatrixPerspective(c *C) {
 	for i := range test.perspectiveTestTable {
 		value := test.perspectiveTestTable[i]
 		matrix := NewPerspectiveMatrix4(value.Fov, value.AspectRatio, value.Near, value.Far)
@@ -142,7 +142,7 @@ func (test *MatrixTestSuite) TestMatrixPerspective(c *C) {
 	}
 }
 
-func (test *MatrixTestSuite) TestMatrixLookAt(c *C) {
+func (test *Matrix4TestSuite) TestMatrixLookAt(c *C) {
 	for i := range test.lookAtTestTable {
 		value := test.lookAtTestTable[i]
 		matrix := NewLookAtMatrix4(value.Eye, value.Center, value.Up)
@@ -150,7 +150,7 @@ func (test *MatrixTestSuite) TestMatrixLookAt(c *C) {
 	}
 }
 
-func (test *MatrixTestSuite) TestMatrixTranslation(c *C) {
+func (test *Matrix4TestSuite) TestMatrixTranslation(c *C) {
 	for i := range test.translateTestTable {
 		value := test.translateTestTable[i]
 		translation := value.Translation
@@ -159,7 +159,7 @@ func (test *MatrixTestSuite) TestMatrixTranslation(c *C) {
 	}
 }
 
-func (test *MatrixTestSuite) TestMatrixRotation(c *C) {
+func (test *Matrix4TestSuite) TestMatrixRotation(c *C) {
 	for i := range test.rotationTestTable {
 		value := test.rotationTestTable[i]
 		matrix := NewRotationMatrix4(value.Axis, value.Angle)
@@ -167,7 +167,7 @@ func (test *MatrixTestSuite) TestMatrixRotation(c *C) {
 	}
 }
 
-func (test *MatrixTestSuite) TestMatrixOrtho(c *C) {
+func (test *Matrix4TestSuite) TestMatrixOrtho(c *C) {
 	for i := range test.orthoTestTable {
 		value := test.orthoTestTable[i]
 		matrix := NewOrthoMatrix4(value.Left, value.Right, value.Bottom, value.Top, value.Near, value.Far)
@@ -175,7 +175,7 @@ func (test *MatrixTestSuite) TestMatrixOrtho(c *C) {
 	}
 }
 
-func (test *MatrixTestSuite) TestMatrixMul(c *C) {
+func (test *Matrix4TestSuite) TestMatrixMul(c *C) {
 	for i := range test.mulTestTable {
 		value := test.mulTestTable[i]
 		matrix := value.M1.Mul(value.M2)
@@ -183,7 +183,7 @@ func (test *MatrixTestSuite) TestMatrixMul(c *C) {
 	}
 }
 
-func (test *MatrixTestSuite) TestMatrixSet(c *C) {
+func (test *Matrix4TestSuite) TestMatrixSet(c *C) {
 	for i := range test.setTestTable {
 		value := test.setTestTable[i]
 		matrix := value.M1.Set(value.M2)
@@ -194,7 +194,7 @@ func (test *MatrixTestSuite) TestMatrixSet(c *C) {
 	}
 }
 
-func (test *MatrixTestSuite) TestMatrixScale(c *C) {
+func (test *Matrix4TestSuite) TestMatrixScale(c *C) {
 	for i := range test.scaleTestTable {
 		value := test.scaleTestTable[i]
 		matrix := value.Matrix.Scale(value.Scalar)
@@ -202,7 +202,7 @@ func (test *MatrixTestSuite) TestMatrixScale(c *C) {
 	}
 }
 
-func (test *MatrixTestSuite) TestMatrixInvert(c *C) {
+func (test *Matrix4TestSuite) TestMatrixInvert(c *C) {
 	for i := range test.invertTestTable {
 		value := test.invertTestTable[i]
 		matrix, err := value.Matrix.Invert()
@@ -211,7 +211,7 @@ func (test *MatrixTestSuite) TestMatrixInvert(c *C) {
 	}
 }
 
-func (test *MatrixTestSuite) TestMatrixDeterminant(c *C) {
+func (test *Matrix4TestSuite) TestMatrixDeterminant(c *C) {
 	for i := range test.determinantTestTable {
 		value := test.determinantTestTable[i]
 		det := value.Matrix.Determinant()
