@@ -120,8 +120,8 @@ func (vec Vector2) Limit(limit float32) Vector2 {
 }
 
 func (vec Vector2) MulMatrix(m *Matrix3) Vector2 {
-	vec.X = vec.X*(*m)[0] + vec.Y*(*m)[3] + (*m)[6]
-	vec.Y = vec.X*(*m)[1] + vec.Y*(*m)[4] + (*m)[7]
+	vec.X = vec.X*m.M11 + vec.Y*m.M21 + m.M31
+	vec.Y = vec.X*m.M12 + vec.Y*m.M22 + m.M32
 	return vec
 }
 
