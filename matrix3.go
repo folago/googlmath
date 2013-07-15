@@ -14,18 +14,21 @@ func NewIdentityMatrix3() *Matrix3 {
 	return &Matrix3{M11: 1.0, M22: 1.0, M33: 1.0}
 }
 
-// Multiplies this matrix with the provided matrix and stores the result in this matrix.
+// Multiplies this matrix with the provided matrix and returns a new matrix.
 func (m *Matrix3) Mul(mat *Matrix3) *Matrix3 {
-	m.M11 = m.M11*m.M11 + m.M21*m.M12 + m.M31*m.M13
-	m.M12 = m.M11*m.M21 + m.M21*m.M22 + m.M31*m.M23
-	m.M13 = m.M11*m.M31 + m.M21*m.M32 + m.M31*m.M33
-	m.M21 = m.M12*m.M11 + m.M22*m.M12 + m.M32*m.M13
-	m.M22 = m.M12*m.M21 + m.M22*m.M22 + m.M32*m.M23
-	m.M23 = m.M12*m.M31 + m.M22*m.M32 + m.M32*m.M33
-	m.M31 = m.M13*m.M11 + m.M23*m.M12 + m.M33*m.M13
-	m.M32 = m.M13*m.M21 + m.M23*m.M22 + m.M33*m.M23
-	m.M33 = m.M13*m.M31 + m.M23*m.M32 + m.M33*m.M33
-	return m
+	temp := &Matrix3{}
+	temp.M11 = m.M11*mat.M11 + m.M21*mat.M12 + m.M31*mat.M13
+	temp.M12 = m.M12*mat.M11 + m.M22*mat.M12 + m.M32*mat.M13
+	temp.M13 = m.M13*mat.M11 + m.M23*mat.M12 + m.M33*mat.M13
+
+	temp.M21 = m.M11*mat.M21 + m.M21*mat.M22 + m.M31*mat.M23
+	temp.M22 = m.M12*mat.M21 + m.M22*mat.M22 + m.M32*mat.M23
+	temp.M23 = m.M13*mat.M21 + m.M23*mat.M22 + m.M33*mat.M23
+
+	temp.M31 = m.M11*mat.M31 + m.M21*mat.M32 + m.M31*mat.M33
+	temp.M32 = m.M12*mat.M31 + m.M22*mat.M32 + m.M32*mat.M33
+	temp.M33 = m.M13*mat.M31 + m.M23*mat.M32 + m.M33*mat.M33
+	return temp
 }
 
 // Sets this matrix to a rotation matrix that will rotate any vector in counter-clockwise order around the z-axis.
