@@ -215,6 +215,6 @@ func (test *Matrix4TestSuite) TestMatrixDeterminant(c *C) {
 	for i := range test.determinantTestTable {
 		value := test.determinantTestTable[i]
 		det := value.Matrix.Determinant()
-		c.Check(Float32Equals(det, value.Expected), Equals, true)
+		c.Check(det, EqualsFloat32, value.Expected)
 	}
 }

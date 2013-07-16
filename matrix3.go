@@ -14,6 +14,59 @@ func NewIdentityMatrix3() *Matrix3 {
 	return &Matrix3{M11: 1.0, M22: 1.0, M33: 1.0}
 }
 
+func NewXRotationMatrix3(angle float32) *Matrix3 {
+	angle = DegreeToRadians * angle
+
+	c := Cos(angle)
+	s := Sin(angle)
+
+	return &Matrix3{
+		1, 0, 0,
+		0, c, -s,
+		0, s, c,
+	}
+}
+
+func NewYRotationMatrix3(angle float32) *Matrix3 {
+	angle = DegreeToRadians * angle
+
+	c := Cos(angle)
+	s := Sin(angle)
+
+	return &Matrix3{
+		c, 0, s,
+		0, 1, 0,
+		-s, 0, c,
+	}
+}
+
+// Returns a rotation matrix that will rotate any vector in counter-clockwise order around the z-axis.
+func NewZRotationMatrix3(angle float32) *Matrix3 {
+	angle = DegreeToRadians * angle
+
+	c := Cos(angle)
+	s := Sin(angle)
+
+	return &Matrix3{
+		c, -s, 0,
+		s, c, 0,
+		0, 0, 1,
+	}
+}
+
+func NewRotationMatrix3(axis Vector3, angle float32) *Matrix3 {
+	axis = axis.Nor()
+	angle = DegreeToRadians * angle
+
+	c := Cos(angle)
+	s := Sin(angle)
+	k := 1 - c
+
+	return &Matrix3{axis.X*axis.X*k + c, axis.X*axis.Y*k + axis.Z*s, axis.X*axis.Z*k - axis.Y*s,
+		axis.X*axis.Y*k - axis.Z*s, axis.Y*axis.Y*k + c, axis.Y*axis.Z*k + axis.X*s,
+		axis.X*axis.Z*k + axis.Y*s, axis.Y*axis.Z*k - axis.X*s, axis.Z*axis.Z*k + c}
+}
+
 // Multiplies this matrix with the provided matrix and returns a new matrix.
 func (m *Matrix3) Mul(mat *Matrix3) *Matrix3 {
 	temp := &Matrix3{}
@@ -29,27 +82,6 @@ func (m *Matrix3) Mul(mat *Matrix3) *Matrix3 {
 	temp.M32 = m.M12*mat.M31 + m.M22*mat.M32 + m.M32*mat.M33
 	temp.M33 = m.M13*mat.M31 + m.M23*mat.M32 + m.M33*mat.M33
 	return temp
-}
-
-// Sets this matrix to a rotation matrix that will rotate any vector in counter-clockwise order around the z-axis.
-func (m *Matrix3) SetToRotation(degrees float32) *Matrix3 {
-	angle := DegreeToRadians * degrees
-	cos := Cos(angle)
-	sin := Sin(angle)
-
-	m.M11 = cos
-	m.M12 = sin
-	m.M13 = 0
-
-	m.M21 = -sin
-	m.M22 = cos
-	m.M23 = 0
-
-	m.M31 = 0
-	m.M32 = 0
-	m.M33 = 1
-
-	return m
 }
 
 // Sets this matrix to a translation matrix.
@@ -84,13 +116,13 @@ func (m *Matrix3) SetToScaling(scaleX, scaleY float32) *Matrix3 {
 }
 
 // The determinant of this matrix
-func (m *Matrix3) Det() float32 {
+func (m *Matrix3) Determinant() float32 {
 	return m.M11*m.M22*m.M33 + m.M21*m.M32*m.M13 + m.M31*m.M12*m.M23 - m.M11*m.M32*m.M23 - m.M21*m.M12*m.M33 - m.M31*m.M22*m.M13
 }
 
 // Inverts this matrix given that the determinant is != 0
 func (m *Matrix3) Inv() (*Matrix3, error) {
-	det := m.Det()
+	det := m.Determinant()
 	if det == 0 {
 		return nil, errors.New("Can't invert a singular matrix")
 	}

@@ -66,7 +66,6 @@ func NewRotationMatrix4(axis Vector3, angle float32) *Matrix4 {
 		axis.X*axis.Y*k - axis.Z*s, axis.Y*axis.Y*k + c, axis.Y*axis.Z*k + axis.X*s, 0,
 		axis.X*axis.Z*k + axis.Y*s, axis.Y*axis.Z*k - axis.X*s, axis.Z*axis.Z*k + c, 0,
 		0, 0, 0, 1}
-
 }
 
 func NewOrthoMatrix4(left, right, bottom, top, near, far float32) *Matrix4 {
