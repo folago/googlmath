@@ -36,5 +36,5 @@ func NearlyEqualFloat32(a, b float32) bool {
 		return true
 	}
 	diff := Abs(a - b)
-	return diff/(Abs(a)+Abs(b)) < NORMALIZATION_TOLERANCE
+	return diff/(Abs(a)+Abs(b)) < 0.0001
 }
