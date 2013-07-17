@@ -10,6 +10,10 @@ type Matrix3 struct {
 	M31, M32, M33 float32
 }
 
+func NewMatrix3(m11, m12, m13, m21, m22, m23, m31, m32, m33 float32) *Matrix3 {
+	return &Matrix3{m11, m12, m13, m21, m22, m23, m31, m32, m33}
+}
+
 func NewIdentityMatrix3() *Matrix3 {
 	return &Matrix3{M11: 1.0, M22: 1.0, M33: 1.0}
 }
@@ -67,6 +71,36 @@ func NewRotationMatrix3(axis Vector3, angle float32) *Matrix3 {
 		axis.X*axis.Z*k + axis.Y*s, axis.Y*axis.Z*k - axis.X*s, axis.Z*axis.Z*k + c}
 }
 
+func NewTranslationMatrix3(x, y float32) *Matrix3 {
+	return &Matrix3{
+		1, 0, 0,
+		0, 1, 0,
+		x, y, 1,
+	}
+}
+
+func NewScaleMatrix3(scaleX, scaleY float32) *Matrix3 {
+	return &Matrix3{
+		scaleX, 0, 0,
+		0, scaleY, 0,
+		0, 0, 1,
+	}
+}
+
+// Copies the values from the provided matrix to this matrix.
+func (m *Matrix3) Set(mat *Matrix3) *Matrix3 {
+	m.M11 = mat.M11
+	m.M12 = mat.M12
+	m.M13 = mat.M13
+	m.M21 = mat.M21
+	m.M22 = mat.M22
+	m.M23 = mat.M23
+	m.M31 = mat.M31
+	m.M32 = mat.M32
+	m.M33 = mat.M33
+	return m
+}
+
 // Multiplies this matrix with the provided matrix and returns a new matrix.
 func (m *Matrix3) Mul(mat *Matrix3) *Matrix3 {
 	temp := &Matrix3{}
@@ -84,44 +118,13 @@ func (m *Matrix3) Mul(mat *Matrix3) *Matrix3 {
 	return temp
 }
 
-// Sets this matrix to a translation matrix.
-func (m *Matrix3) SetToTranslation(x, y float32) *Matrix3 {
-	m.M11 = 1
-	m.M12 = 0
-	m.M13 = 0
-
-	m.M21 = 0
-	m.M22 = 1
-	m.M23 = 0
-
-	m.M31 = x
-	m.M32 = y
-	m.M33 = 1
-
-	return m
-}
-
-// Sets this matrix to a scaling matrix.
-func (m *Matrix3) SetToScaling(scaleX, scaleY float32) *Matrix3 {
-	m.M11 = scaleX
-	m.M12 = 0
-	m.M13 = 0
-	m.M21 = 0
-	m.M22 = scaleY
-	m.M23 = 0
-	m.M31 = 0
-	m.M32 = 0
-	m.M33 = 1
-	return m
-}
-
-// The determinant of this matrix
+// Returns tThe determinant of this matrix
 func (m *Matrix3) Determinant() float32 {
 	return m.M11*m.M22*m.M33 + m.M21*m.M32*m.M13 + m.M31*m.M12*m.M23 - m.M11*m.M32*m.M23 - m.M21*m.M12*m.M33 - m.M31*m.M22*m.M13
 }
 
-// Inverts this matrix given that the determinant is != 0
-func (m *Matrix3) Inv() (*Matrix3, error) {
+// Returns the inverse matrix given that the determinant is != 0
+func (m *Matrix3) Inverse() (*Matrix3, error) {
 	det := m.Determinant()
 	if det == 0 {
 		return nil, errors.New("Can't invert a singular matrix")
@@ -129,120 +132,31 @@ func (m *Matrix3) Inv() (*Matrix3, error) {
 
 	invDet := 1.0 / det
 
-	m.M11 = invDet * (m.M22*m.M33 - m.M23*m.M32)
-	m.M12 = invDet * (m.M13*m.M32 - m.M12*m.M33)
-	m.M13 = invDet * (m.M12*m.M23 - m.M13*m.M22)
-	m.M21 = invDet * (m.M23*m.M31 - m.M21*m.M33)
-	m.M22 = invDet * (m.M11*m.M33 - m.M13*m.M31)
-	m.M23 = invDet * (m.M13*m.M21 - m.M11*m.M23)
-	m.M31 = invDet * (m.M21*m.M32 - m.M22*m.M31)
-	m.M32 = invDet * (m.M12*m.M31 - m.M11*m.M32)
-	m.M33 = invDet * (m.M11*m.M22 - m.M12*m.M21)
-
-	return m, nil
+	return &Matrix3{
+		invDet * (m.M22*m.M33 - m.M23*m.M32), invDet * (m.M13*m.M32 - m.M12*m.M33), invDet * (m.M12*m.M23 - m.M13*m.M22),
+		invDet * (m.M23*m.M31 - m.M21*m.M33), invDet * (m.M11*m.M33 - m.M13*m.M31), invDet * (m.M13*m.M21 - m.M11*m.M23),
+		invDet * (m.M21*m.M32 - m.M22*m.M31), invDet * (m.M12*m.M31 - m.M11*m.M32), invDet * (m.M11*m.M22 - m.M12*m.M21),
+	}, nil
 }
 
-// Copies the values from the provided matrix to this matrix.
-func (m *Matrix3) Set(mat *Matrix3) *Matrix3 {
-	m.M11 = mat.M11
-	m.M12 = mat.M12
-	m.M13 = mat.M13
-	m.M21 = mat.M21
-	m.M22 = mat.M22
-	m.M23 = mat.M23
-	m.M31 = mat.M31
-	m.M32 = mat.M32
-	m.M33 = mat.M33
-	return m
-}
-
-// Adds a translational component to the matrix in the 3rd column. The other columns are untouched.
-func (m *Matrix3) Trn(x, y float32) *Matrix3 {
-	m.M31 += x
-	m.M32 += y
-	return m
-}
-
-// Postmultiplies this matrix by a translation matrix. Postmultiplication is also used by OpenGL ES' 1.x glTranslate/glRotate/glScale.
-func (m *Matrix3) Translate(x, y float32) *Matrix3 {
-	mat := &Matrix3{}
-	m.M11 = 1
-	m.M12 = 0
-	m.M13 = 0
-
-	m.M21 = 0
-	m.M22 = 1
-	m.M23 = 0
-
-	m.M31 = x
-	m.M32 = y
-	m.M33 = 1
-	m.Mul(mat)
-	return m
-}
-
-// Postmultiplies this matrix with a (counter-clockwise) rotation matrix. Postmultiplication is also used by OpenGL ES' 1.x glTranslate/glRotate/glScale.
-func (m *Matrix3) Rotate(angle float32) *Matrix3 {
-	if angle == 0 {
-		return m
-	}
-	angle = DegreeToRadians * angle
-	cos := Cos(angle)
-	sin := Sin(angle)
-
-	mat := &Matrix3{}
-	m.M11 = cos
-	m.M12 = sin
-	m.M13 = 0
-
-	m.M21 = -sin
-	m.M22 = cos
-	m.M23 = 0
-
-	m.M31 = 0
-	m.M32 = 0
-	m.M33 = 1
-	m.Mul(mat)
-	return m
-}
-
-// Postmultiplies this matrix with a scale matrix. Postmultiplication is also used by OpenGL ES' 1.x glTranslate/glRotate/glScale.
-func (m *Matrix3) Scale(scaleX, scaleY float32) *Matrix3 {
-	mat := &Matrix3{}
-	m.M11 = scaleX
-	m.M12 = 0
-	m.M13 = 0
-
-	m.M21 = 0
-	m.M22 = scaleY
-	m.M23 = 0
-
-	m.M31 = 0
-	m.M32 = 0
-	m.M33 = 1
-	m.Mul(mat)
-	return m
-}
-
-func (m *Matrix3) Values() []float32 {
+func (m *Matrix3) ToArray() []float32 {
 	return []float32{m.M11, m.M12, m.M13, m.M21, m.M22, m.M23, m.M31, m.M32, m.M33}
 }
 
-// Scale the matrix in the both the x, y, z components by the scalar value.
-func (m *Matrix3) Scl(scale float32) *Matrix3 {
-	m.M11 *= scale
-	m.M22 *= scale
-	m.M33 *= scale
-	return m
+// Returns this matrix transposed.
+func (m *Matrix3) Transpose() *Matrix3 {
+	return &Matrix3{
+		m.M11, m.M21, m.M31,
+		m.M12, m.M22, m.M32,
+		m.M13, m.M23, m.M33,
+	}
 }
 
-// Transposes the current matrix.
-func (m *Matrix3) Transposes() *Matrix3 {
-	m.M21 = m.M12
-	m.M31 = m.M13
-	m.M12 = m.M21
-	m.M32 = m.M23
-	m.M13 = m.M31
-	m.M23 = m.M32
-	return m
-}
+// Build planar projection matrix along normal axis.
+// TODO Proj2D(normal Vector3) *Matrix3
+
+// Returns a transformed matrix with a shearing on X axis.
+// TODO ShearX2D(y float32) *Matrix3
+
+// Returns a transformed matrix with a shearing on Y axis.
+// TODO ShearY2D(x float32) *Matrix3
