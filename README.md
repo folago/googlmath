@@ -1,8 +1,9 @@
 ## googlmath
 Go OpenGL math library
+The goal is a math library for OpenGL written in Go which is similar to GLM but is feels like a yet another Go library.
 
 ## Status
-API is mostly stable. A lot of tests are missing. Some code contains errors and some is not optimized at all.
+API is not stable! A lot of tests are missing. Some code contains errors and some is not optimized at all.
 If you use this library, do yourself a favour and check if the functions you use are correct.
 NOTE: The code is not checked for concurrency use (yet).
 
