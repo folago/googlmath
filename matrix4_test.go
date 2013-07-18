@@ -61,6 +61,12 @@ type MatrixDeterminantTestValue struct {
 	Expected float32
 }
 
+type Vector4Matrix4TestValue struct {
+	Matrix   *Matrix4
+	Value    Vector4
+	Expected Vector4
+}
+
 type Matrix4TestSuite struct {
 	perspectiveTestTable []MatrixPerspectiveTestValue
 	lookAtTestTable      []MatrixLookAtTestValue
@@ -68,6 +74,7 @@ type Matrix4TestSuite struct {
 	rotationTestTable    []MatrixRotationTestValue
 	orthoTestTable       []MatrixOrthoTestValue
 	mulTestTable         []MatrixMulTestValue
+	mulVec4TestTable     []Vector4Matrix4TestValue
 	setTestTable         []MatrixSetTestValue
 	scaleTestTable       []MatrixScaleTestValue
 	invertTestTable      []MatrixInvertTestValue
@@ -106,6 +113,19 @@ func (test *Matrix4TestSuite) SetUpTest(c *C) {
 			M1:       &Matrix4{1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0},
 			M2:       &Matrix4{1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -3.0, 2.200000, 15.0, 1.0},
 			Expected: &Matrix4{1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -3.0, 2.200000, 15.0, 1.0},
+		},
+	}
+
+	test.mulVec4TestTable = []Vector4Matrix4TestValue{
+		Vector4Matrix4TestValue{
+			&Matrix4{1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -3.0, 2.2, 15.0, 1.0},
+			Vec4(1.0, 2.0, 3.0, 4.0),
+			Vec4(-11.0, 10.8, 63.0, 4.0),
+		},
+		Vector4Matrix4TestValue{
+			&Matrix4{1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -3.3, 2.2, 1.3, 1.0},
+			Vec4(-1.0, 2.0, 3.0, -4.0),
+			Vec4(12.2, -6.8, -2.2, -4.0),
 		},
 	}
 
@@ -180,6 +200,14 @@ func (test *Matrix4TestSuite) TestMatrixMul(c *C) {
 		value := test.mulTestTable[i]
 		matrix := value.M1.Mul(value.M2)
 		c.Check(matrix, Matrix4Check, value.Expected)
+	}
+}
+
+func (test *Matrix4TestSuite) TestMatrixMulVec4(c *C) {
+	for i := range test.mulVec4TestTable {
+		value := test.mulVec4TestTable[i]
+		v := value.Matrix.MulVec4(value.Value)
+		c.Check(v, Vector4Check, value.Expected)
 	}
 }
 
