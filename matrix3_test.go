@@ -54,19 +54,20 @@ type Vector3FloatMatrix3TestValue struct {
 }
 
 type Matrix3TestSuite struct {
-	newXRotationTestTable []FloatMatrix3TestValue
-	newYRotationTestTable []FloatMatrix3TestValue
-	newZRotationTestTable []FloatMatrix3TestValue
-	newRotationTestTable  []Vector3FloatMatrix3TestValue
-	scaleTestTable        []Vector2Matrix3TestValue
-	mulTestTable          []MulMatrix3TestValue
-	determinantTestTable  []DeterminantMatrix3TestValue
-	inverseTestTable      []Matrix3TestValue
-	toArrayTestTable      []ArrayMatrix3TestValue
-	transposeTestTable    []Matrix3TestValue
-	proj2DTestTable       []MatrixVector3Matrix3TestValue
-	shearX2DTestTable     []MatrixFloatMatrix3TestValue
-	shearY2DTestTable     []MatrixFloatMatrix3TestValue
+	newXRotationTestTable   []FloatMatrix3TestValue
+	newYRotationTestTable   []FloatMatrix3TestValue
+	newZRotationTestTable   []FloatMatrix3TestValue
+	newRotationTestTable    []Vector3FloatMatrix3TestValue
+	newTranslationTestTable []Vector2Matrix3TestValue
+	scaleTestTable          []Vector2Matrix3TestValue
+	mulTestTable            []MulMatrix3TestValue
+	determinantTestTable    []DeterminantMatrix3TestValue
+	inverseTestTable        []Matrix3TestValue
+	toArrayTestTable        []ArrayMatrix3TestValue
+	transposeTestTable      []Matrix3TestValue
+	proj2DTestTable         []MatrixVector3Matrix3TestValue
+	shearX2DTestTable       []MatrixFloatMatrix3TestValue
+	shearY2DTestTable       []MatrixFloatMatrix3TestValue
 }
 
 var matrixTest3Suite = Suite(&Matrix3TestSuite{})
@@ -115,6 +116,25 @@ func (test *Matrix3TestSuite) SetUpTest(c *C) {
 			Vec3(2.0, 2.5, 0.0),
 			-45.0,
 			&Matrix3{0.821407, 0.142875, 0.552158, 0.142875, 0.885700, -0.441726, -0.552158, 0.441726, 0.707107},
+		},
+	}
+
+	test.newTranslationTestTable = []Vector2Matrix3TestValue{
+		Vector2Matrix3TestValue{
+			Vec2(1.2, 2.0),
+			&Matrix3{
+				1.0, 0.0, 0.0,
+				0.0, 1.0, 0.0,
+				1.2, 2.0, 1.0,
+			},
+		},
+		Vector2Matrix3TestValue{
+			Vec2(-2.2, 3.3),
+			&Matrix3{
+				1.0, 0.0, 0.0,
+				0.0, 1.0, 0.0,
+				-2.2, 3.3, 1.0,
+			},
 		},
 	}
 
@@ -258,7 +278,12 @@ func (test *Matrix3TestSuite) TestNewRotationMatrix3(c *C) {
 	}
 }
 
-// TODO Test NewTranslationMatrix3
+func (test *Matrix3TestSuite) TestNewTranslationMatrix3(c *C) {
+	for _, value := range test.newTranslationTestTable {
+		matrix := NewTranslationMatrix3(value.Vector.X, value.Vector.Y)
+		c.Check(matrix, Matrix3Check, value.Expected)
+	}
+}
 
 func (test *Matrix3TestSuite) TestNewScaleMatrix3(c *C) {
 	for _, value := range test.scaleTestTable {
