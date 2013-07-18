@@ -36,6 +36,12 @@ type MatrixVector3Matrix3TestValue struct {
 	Expected *Matrix3
 }
 
+type MatrixFloatMatrix3TestValue struct {
+	Matrix   *Matrix3
+	Value    float32
+	Expected *Matrix3
+}
+
 type Matrix3TestSuite struct {
 	newXRotationTestTable []FloatMatrix3TestValue
 	newYRotationTestTable []FloatMatrix3TestValue
@@ -46,6 +52,8 @@ type Matrix3TestSuite struct {
 	toArrayTestTable      []ArrayMatrix3TestValue
 	transposeTestTable    []Matrix3TestValue
 	proj2DTestTable       []MatrixVector3Matrix3TestValue
+	shearX2DTestTable     []MatrixFloatMatrix3TestValue
+	shearY2DTestTable     []MatrixFloatMatrix3TestValue
 }
 
 var matrixTest3Suite = Suite(&Matrix3TestSuite{})
@@ -141,6 +149,31 @@ func (test *Matrix3TestSuite) SetUpTest(c *C) {
 		},
 	}
 
+	test.shearX2DTestTable = []MatrixFloatMatrix3TestValue{
+		MatrixFloatMatrix3TestValue{
+			&Matrix3{11.0, 0.0, 3.0, -3.0, 2.5, 0.0, 2.2, 0.3, 12.0},
+			1.2,
+			&Matrix3{7.4, 3.0, 3.0, -3.0, 2.5, 0.0, 2.2, 0.3, 12.0},
+		},
+		MatrixFloatMatrix3TestValue{
+			&Matrix3{11.0, 0.0, 3.0, -3.0, 2.5, 0.0, 2.2, 0.3, 12.0},
+			-1.2,
+			&Matrix3{14.6, -3.0, 3.0, -3.0, 2.5, 0.0, 2.2, 0.3, 12.0},
+		},
+	}
+
+	test.shearY2DTestTable = []MatrixFloatMatrix3TestValue{
+		MatrixFloatMatrix3TestValue{
+			&Matrix3{11.0, 0.0, 3.0, -3.0, 2.5, 0.0, 2.2, 0.3, 12.0},
+			1.2,
+			&Matrix3{11.0, 0.0, 3.0, 10.200001, 2.5, 3.6, 2.2, 0.3, 12.0},
+		},
+		MatrixFloatMatrix3TestValue{
+			&Matrix3{11.0, 0.0, 3.0, -3.0, 2.5, 0.0, 2.2, 0.3, 12.0},
+			-1.2,
+			&Matrix3{11.0, 0.0, 3.0, -16.200001, 2.5, -3.6, 2.2, 0.3, 12.0},
+		},
+	}
 }
 
 func (test *Matrix3TestSuite) TestNewMatrix3(c *C) {
@@ -238,5 +271,16 @@ func (test *Matrix3TestSuite) TestProj2D(c *C) {
 	}
 }
 
-// TODO Test ShearX2D
-// TODO Test ShearY2D
+func (test *Matrix3TestSuite) TestShearX2D(c *C) {
+	for _, value := range test.shearX2DTestTable {
+		m := value.Matrix.ShearX2D(value.Value)
+		c.Check(m, Matrix3Check, value.Expected)
+	}
+}
+
+func (test *Matrix3TestSuite) TestShearY2D(c *C) {
+	for _, value := range test.shearY2DTestTable {
+		m := value.Matrix.ShearY2D(value.Value)
+		c.Check(m, Matrix3Check, value.Expected)
+	}
+}

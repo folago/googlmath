@@ -163,7 +163,21 @@ func (m *Matrix3) Proj2D(normal Vector3) *Matrix3 {
 }
 
 // Returns a transformed matrix with a shearing on X axis.
-// TODO ShearX2D(y float32) *Matrix3
+func (m *Matrix3) ShearX2D(y float32) *Matrix3 {
+	r := &Matrix3{
+		1, y, 0,
+		0, 1, 0,
+		0, 0, 1,
+	}
+	return m.Mul(r)
+}
 
 // Returns a transformed matrix with a shearing on Y axis.
-// TODO ShearY2D(x float32) *Matrix3
+func (m *Matrix3) ShearY2D(x float32) *Matrix3 {
+	r := &Matrix3{
+		1, 0, 0,
+		x, 1, 0,
+		0, 0, 1,
+	}
+	return m.Mul(r)
+}
