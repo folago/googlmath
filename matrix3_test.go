@@ -30,6 +30,12 @@ type FloatMatrix3TestValue struct {
 	Expected *Matrix3
 }
 
+type MatrixVector3Matrix3TestValue struct {
+	Matrix   *Matrix3
+	Vector   Vector3
+	Expected *Matrix3
+}
+
 type Matrix3TestSuite struct {
 	newXRotationTestTable []FloatMatrix3TestValue
 	newYRotationTestTable []FloatMatrix3TestValue
@@ -39,6 +45,7 @@ type Matrix3TestSuite struct {
 	inverseTestTable      []Matrix3TestValue
 	toArrayTestTable      []ArrayMatrix3TestValue
 	transposeTestTable    []Matrix3TestValue
+	proj2DTestTable       []MatrixVector3Matrix3TestValue
 }
 
 var matrixTest3Suite = Suite(&Matrix3TestSuite{})
@@ -125,6 +132,15 @@ func (test *Matrix3TestSuite) SetUpTest(c *C) {
 			&Matrix3{11.0, -3.0, 2.2, 0.0, 2.5, 0.3, 3.0, 0.0, 12.0},
 		},
 	}
+
+	test.proj2DTestTable = []MatrixVector3Matrix3TestValue{
+		MatrixVector3Matrix3TestValue{
+			&Matrix3{11.0, 0.0, 3.0, -3.0, 2.5, 0.0, 2.2, 0.3, 12.0},
+			Vec3(1, 2, 3),
+			&Matrix3{6.0, -5.0, 0.0, -13.0, -7.5, -6.0, 2.2, 0.3, 12.0},
+		},
+	}
+
 }
 
 func (test *Matrix3TestSuite) TestNewMatrix3(c *C) {
@@ -215,6 +231,12 @@ func (test *Matrix3TestSuite) TestTranspose(c *C) {
 	}
 }
 
-// TODO Test Proj2D
+func (test *Matrix3TestSuite) TestProj2D(c *C) {
+	for _, value := range test.proj2DTestTable {
+		m := value.Matrix.Proj2D(value.Vector)
+		c.Check(m, Matrix3Check, value.Expected)
+	}
+}
+
 // TODO Test ShearX2D
 // TODO Test ShearY2D

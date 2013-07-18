@@ -153,7 +153,14 @@ func (m *Matrix3) Transpose() *Matrix3 {
 }
 
 // Build planar projection matrix along normal axis.
-// TODO Proj2D(normal Vector3) *Matrix3
+func (m *Matrix3) Proj2D(normal Vector3) *Matrix3 {
+	r := &Matrix3{
+		1 - normal.X*normal.X, -normal.X * normal.Y, 0,
+		-normal.X * normal.Y, 1 - normal.Y*normal.Y, 0,
+		0, 0, 1,
+	}
+	return m.Mul(r)
+}
 
 // Returns a transformed matrix with a shearing on X axis.
 // TODO ShearX2D(y float32) *Matrix3
