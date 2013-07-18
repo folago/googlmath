@@ -42,10 +42,16 @@ type MatrixFloatMatrix3TestValue struct {
 	Expected *Matrix3
 }
 
+type Vector2Matrix3TestValue struct {
+	Vector   Vector2
+	Expected *Matrix3
+}
+
 type Matrix3TestSuite struct {
 	newXRotationTestTable []FloatMatrix3TestValue
 	newYRotationTestTable []FloatMatrix3TestValue
 	newZRotationTestTable []FloatMatrix3TestValue
+	scaleTestTable        []Vector2Matrix3TestValue
 	mulTestTable          []MulMatrix3TestValue
 	determinantTestTable  []DeterminantMatrix3TestValue
 	inverseTestTable      []Matrix3TestValue
@@ -89,6 +95,17 @@ func (test *Matrix3TestSuite) SetUpTest(c *C) {
 		FloatMatrix3TestValue{
 			11,
 			&Matrix3{Cos(11 * Pi / 180), -Sin(11 * Pi / 180), 0, Sin(11 * Pi / 180), Cos(11 * Pi / 180), 0, 0, 0, 1},
+		},
+	}
+
+	test.scaleTestTable = []Vector2Matrix3TestValue{
+		Vector2Matrix3TestValue{
+			Vec2(1.2, -2.0),
+			&Matrix3{1.2, 0.0, 0.0, -0.0, -2.0, -0.0, 0.0, 0.0, 1.0},
+		},
+		Vector2Matrix3TestValue{
+			Vec2(-1.2, -2.3),
+			&Matrix3{-1.2, -0.0, -0.0, -0.0, -2.3, -0.0, 0.0, 0.0, 1.0},
 		},
 	}
 
@@ -216,7 +233,13 @@ func (test *Matrix3TestSuite) TestNewZRotationMatrix3(c *C) {
 
 // TODO Test NewRotationMatrix3
 // TODO Test NewTranslationMatrix3
-// TODO Test NewScaleMatrix3
+
+func (test *Matrix3TestSuite) TestNewScaleMatrix3(c *C) {
+	for _, value := range test.scaleTestTable {
+		matrix := NewScaleMatrix3(value.Vector.X, value.Vector.Y)
+		c.Check(matrix, Matrix3Check, value.Expected)
+	}
+}
 
 func (test *Matrix3TestSuite) TestSet(c *C) {
 	m := &Matrix3{}
