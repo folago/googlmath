@@ -113,6 +113,14 @@ func (m *Matrix4) MulVec3(vec Vector3) Vector3 {
 	return vec
 }
 
+func (m *Matrix4) MulVec4(vec Vector4) Vector4 {
+	vec.X = vec.X*m.M11 + vec.Y*m.M21 + vec.Z*m.M31 + vec.W*m.M41
+	vec.Y = vec.X*m.M12 + vec.Y*m.M22 + vec.Z*m.M32 + vec.W*m.M42
+	vec.Z = vec.X*m.M13 + vec.Y*m.M23 + vec.Z*m.M33 + vec.W*m.M43
+	vec.W = vec.X*m.M14 + vec.Y*m.M24 + vec.Z*m.M34 + vec.W*m.M44
+	return vec
+}
+
 func (m *Matrix4) Scale(scalar Vector3) *Matrix4 {
 	s := &Matrix4{
 		M11: scalar.X,
@@ -170,7 +178,7 @@ func (m *Matrix4) Invert() (*Matrix4, error) {
 }
 
 // The determinant of this matrix.
-func (m Matrix4) Determinant() float32 {
+func (m *Matrix4) Determinant() float32 {
 	return m.M14*m.M23*m.M32*m.M41 -
 		m.M13*m.M24*m.M32*m.M41 -
 		m.M14*m.M22*m.M33*m.M41 +
@@ -195,4 +203,36 @@ func (m Matrix4) Determinant() float32 {
 		m.M11*m.M23*m.M32*m.M44 -
 		m.M12*m.M21*m.M33*m.M44 +
 		m.M11*m.M22*m.M33*m.M44
+}
+
+func Project(obj Vector3, model, projection *Matrix4, viewport Vector4) Vector3 {
+	tmp := Vec4(obj.X, obj.Y, obj.Z, 1)
+
+	tmp = model.MulVec4(tmp)
+	tmp = projection.MulVec4(tmp)
+
+	tmp = tmp.Scale(1.0 / tmp.W)
+
+	tmp = tmp.Scale(0.5).Add(Vec4(0.5, 0.5, 0.5, 0.5))
+
+	tmp.X = tmp.X*viewport.Z + viewport.X
+	tmp.Y = tmp.Y*viewport.W + viewport.Y
+
+	return Vec3(tmp.X, tmp.Y, tmp.Z)
+}
+
+func UnProject(window Vector3, model, projection *Matrix4, viewport Vector4) (Vector3, error) {
+	inverse, err := projection.Mul(model).Invert()
+	if err != nil {
+		return Vec3(0, 0, 0), err
+	}
+
+	tmp := Vec4(window.X, window.Y, window.Z, 1)
+	tmp.X = (tmp.X - viewport.X) / viewport.Z
+	tmp.Y = (tmp.Y - viewport.Y) / viewport.W
+	tmp = tmp.Scale(2).Sub(Vec4(1, 1, 1, 1))
+
+	obj := inverse.MulVec4(tmp)
+	obj = obj.Scale(1.0 / obj.W)
+	return Vec3(obj.X, obj.Y, obj.Z), nil
 }
