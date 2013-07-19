@@ -205,24 +205,44 @@ func (m *Matrix4) Determinant() float32 {
 		m.M11*m.M22*m.M33*m.M44
 }
 
-func Project(obj Vector3, model, projection *Matrix4, viewport Vector4) Vector3 {
-	tmp := Vec4(obj.X, obj.Y, obj.Z, 1)
+// Equal to gluProject
+func Project(obj Vector3, modelview, projection *Matrix4, viewport Vector4) Vector3 {
+	// Modelview transform
+	ft0 := modelview.M11*obj.X + modelview.M21*obj.Y + modelview.M31*obj.Z + modelview.M41
+	ft1 := modelview.M12*obj.X + modelview.M22*obj.Y + modelview.M32*obj.Z + modelview.M42
+	ft2 := modelview.M13*obj.X + modelview.M23*obj.Y + modelview.M33*obj.Z + modelview.M43
+	ft3 := modelview.M14*obj.X + modelview.M24*obj.Y + modelview.M34*obj.Z + modelview.M44
 
-	tmp = model.MulVec4(tmp)
-	tmp = projection.MulVec4(tmp)
+	// Projection transform, the final row of projection matrix is always [0,0,-1,0]
+	// so we optimize for that.
+	ft4 := projection.M11*ft0 + projection.M21*ft1 + projection.M31*ft2 + projection.M41*ft3
+	ft5 := projection.M12*ft0 + projection.M22*ft1 + projection.M32*ft2 + projection.M42*ft3
+	ft6 := projection.M13*ft0 + projection.M23*ft1 + projection.M33*ft2 + projection.M43*ft3
+	ft7 := -ft2
+	// The result normalizes between -1 and 1
+	if ft7 == 0.0 { // The w value
+		return Vec3(0, 0, 0)
+	}
+	ft7 = 1.0 / ft7
 
-	tmp = tmp.Scale(1.0 / tmp.W)
+	// Perspective division
+	ft4 *= ft7
+	ft5 *= ft7
+	ft6 *= ft7
 
-	tmp = tmp.Scale(0.5).Add(Vec4(0.5, 0.5, 0.5, 0.5))
-
-	tmp.X = tmp.X*viewport.Z + viewport.X
-	tmp.Y = tmp.Y*viewport.W + viewport.Y
-
-	return Vec3(tmp.X, tmp.Y, tmp.Z)
+	// Window coordinates
+	// Map x, y to range 0-1
+	x := (ft4*0.5+0.5)*viewport.Z + viewport.X
+	y := (ft5*0.5+0.5)*viewport.W + viewport.Y
+	z := (1.0 + ft6) * 0.5
+	return Vec3(x, y, z)
 }
 
-func UnProject(window Vector3, model, projection *Matrix4, viewport Vector4) (Vector3, error) {
-	inverse, err := projection.Mul(model).Invert()
+func UnProject(window Vector3, modelview, projection *Matrix4, viewport Vector4) (Vector3, error) {
+	a := projection.Mul(modelview)
+
+	// Compute the inverse of matrix a
+	inverse, err := a.Invert()
 	if err != nil {
 		return Vec3(0, 0, 0), err
 	}
