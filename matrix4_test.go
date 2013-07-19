@@ -67,6 +67,14 @@ type Vector4Matrix4TestValue struct {
 	Expected Vector4
 }
 
+type ProjectMatrix4TestValue struct {
+	Value    Vector3
+	Model    *Matrix4
+	Proj     *Matrix4
+	Viewport Vector4
+	Expected Vector3
+}
+
 type Matrix4TestSuite struct {
 	perspectiveTestTable []MatrixPerspectiveTestValue
 	lookAtTestTable      []MatrixLookAtTestValue
@@ -79,6 +87,8 @@ type Matrix4TestSuite struct {
 	scaleTestTable       []MatrixScaleTestValue
 	invertTestTable      []MatrixInvertTestValue
 	determinantTestTable []MatrixDeterminantTestValue
+	projectTestTable     []ProjectMatrix4TestValue
+	unProjectTestTable   []ProjectMatrix4TestValue
 }
 
 var matrixTestSuite = Suite(&Matrix4TestSuite{})
@@ -151,6 +161,26 @@ func (test *Matrix4TestSuite) SetUpTest(c *C) {
 		MatrixDeterminantTestValue{&Matrix4{0.2, 0.0, 0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.0, -0.02, 0.0, -1.0, -1.0, -1.0, 1.0}, -0.0008},
 		MatrixDeterminantTestValue{NewIdentityMatrix4(), 1.0},
 		MatrixDeterminantTestValue{&Matrix4{1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -3.0, 2.2, 15.0, 1.0}, 1.0},
+	}
+
+	test.projectTestTable = []ProjectMatrix4TestValue{
+		ProjectMatrix4TestValue{
+			Vec3(-1.0, 2.0, 3.0),
+			&Matrix4{1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -3.3, 2.2, 1.3, 1.0},
+			&Matrix4{0.5625, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, -0.0, -1.0, 0.0, 0.0, 1.0, 0.0},
+			Vec4(0.0, 0.0, 1.0, 1.0),
+			Vec3(0.78125, 0.011628, 0.383721),
+		},
+	}
+
+	test.unProjectTestTable = []ProjectMatrix4TestValue{
+		ProjectMatrix4TestValue{
+			Vec3(-1.0, 2.0, 3.0),
+			&Matrix4{1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, -3.3, 2.2, 1.3, 1.0},
+			&Matrix4{0.5625, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, -0.0, -1.0, 0.0, 0.0, 1.0, 0.0},
+			Vec4(0.0, 0.0, 1.0, 1.0),
+			Vec3(2.233333, -1.6, -1.5),
+		},
 	}
 }
 
@@ -244,5 +274,22 @@ func (test *Matrix4TestSuite) TestMatrixDeterminant(c *C) {
 		value := test.determinantTestTable[i]
 		det := value.Matrix.Determinant()
 		c.Check(det, EqualsFloat32, value.Expected)
+	}
+}
+
+func (test *Matrix4TestSuite) TestProject(c *C) {
+	for i := range test.projectTestTable {
+		value := test.projectTestTable[i]
+		prj := Project(value.Value, value.Model, value.Proj, value.Viewport)
+		c.Check(prj, Vector3Check, value.Expected)
+	}
+}
+
+func (test *Matrix4TestSuite) TestUnProject(c *C) {
+	for i := range test.unProjectTestTable {
+		value := test.unProjectTestTable[i]
+		unProj, err := UnProject(value.Value, value.Model, value.Proj, value.Viewport)
+		c.Check(err, IsNil)
+		c.Check(unProj, Vector3Check, value.Expected)
 	}
 }
