@@ -36,6 +36,23 @@ func NewPerspectiveMatrix4(fovy, aspectRatio, near, far float32) *Matrix4 {
 	}
 }
 
+func NewFrustumMatrix4(left, right, bottom, top, near, far float32) *Matrix4 {
+
+	//x:= 2.0 * near / ( right - left )
+	//y:= 2.0 * near / ( top - bottom )
+
+	//a:= ( right + left ) / ( right - left )
+	//b:= ( top + bottom ) / ( top - bottom )
+	//c:= - ( far + near ) / ( far - near )
+	//d:= - 2.0 * far * near / ( far - near )
+
+	return &Matrix4{2.0 * near / (right - left), 0, 0, 0,
+		0, 2.0 * near / (top - bottom), 0, 0,
+		(right + left) / (right - left), (top + bottom) / (top - bottom), -(far + near) / (far - near), -1,
+		0, 0, -2.0 * far * near / (far - near), 0}
+
+}
+
 func NewTranslationMatrix4(x, y, z float32) *Matrix4 {
 	return &Matrix4{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1}
 }
@@ -131,6 +148,54 @@ func (m *Matrix4) Scale(scalar Vector3) *Matrix4 {
 	return m.Mul(s)
 }
 
+//return the inverted matrix
+func (m *Matrix4) Inverted() (*Matrix4, error) {
+	det := m.Determinant()
+	if det == 0 {
+		return nil, errors.New("non-invertible matrix")
+	}
+
+	tmp := &Matrix4{}
+
+	tmp.M11 = m.M32*m.M43*m.M24 - m.M42*m.M33*m.M24 + m.M42*m.M23*m.M34 - m.M22*m.M43*m.M34 - m.M32*m.M23*m.M44 + m.M22*m.M33*m.M44
+	tmp.M21 = m.M41*m.M33*m.M24 - m.M31*m.M43*m.M24 - m.M41*m.M23*m.M34 + m.M21*m.M43*m.M34 + m.M31*m.M23*m.M44 - m.M21*m.M33*m.M44
+	tmp.M31 = m.M31*m.M42*m.M24 - m.M41*m.M32*m.M24 + m.M41*m.M22*m.M34 - m.M21*m.M42*m.M34 - m.M31*m.M22*m.M44 + m.M21*m.M32*m.M44
+	tmp.M41 = m.M41*m.M32*m.M23 - m.M31*m.M42*m.M23 - m.M41*m.M22*m.M33 + m.M21*m.M42*m.M33 + m.M31*m.M22*m.M43 - m.M21*m.M32*m.M43
+	tmp.M12 = m.M42*m.M33*m.M14 - m.M32*m.M43*m.M14 - m.M42*m.M13*m.M34 + m.M12*m.M43*m.M34 + m.M32*m.M13*m.M44 - m.M12*m.M33*m.M44
+	tmp.M22 = m.M31*m.M43*m.M14 - m.M41*m.M33*m.M14 + m.M41*m.M13*m.M34 - m.M11*m.M43*m.M34 - m.M31*m.M13*m.M44 + m.M11*m.M33*m.M44
+	tmp.M32 = m.M41*m.M32*m.M14 - m.M31*m.M42*m.M14 - m.M41*m.M12*m.M34 + m.M11*m.M42*m.M34 + m.M31*m.M12*m.M44 - m.M11*m.M32*m.M44
+	tmp.M42 = m.M31*m.M42*m.M13 - m.M41*m.M32*m.M13 + m.M41*m.M12*m.M33 - m.M11*m.M42*m.M33 - m.M31*m.M12*m.M43 + m.M11*m.M32*m.M43
+	tmp.M13 = m.M22*m.M43*m.M14 - m.M42*m.M23*m.M14 + m.M42*m.M13*m.M24 - m.M12*m.M43*m.M24 - m.M22*m.M13*m.M44 + m.M12*m.M23*m.M44
+	tmp.M23 = m.M41*m.M23*m.M14 - m.M21*m.M43*m.M14 - m.M41*m.M13*m.M24 + m.M11*m.M43*m.M24 + m.M21*m.M13*m.M44 - m.M11*m.M23*m.M44
+	tmp.M33 = m.M21*m.M42*m.M14 - m.M41*m.M22*m.M14 + m.M41*m.M12*m.M24 - m.M11*m.M42*m.M24 - m.M21*m.M12*m.M44 + m.M11*m.M22*m.M44
+	tmp.M43 = m.M41*m.M22*m.M13 - m.M21*m.M42*m.M13 - m.M41*m.M12*m.M23 + m.M11*m.M42*m.M23 + m.M21*m.M12*m.M43 - m.M11*m.M22*m.M43
+	tmp.M14 = m.M32*m.M23*m.M14 - m.M22*m.M33*m.M14 - m.M32*m.M13*m.M24 + m.M12*m.M33*m.M24 + m.M22*m.M13*m.M34 - m.M12*m.M23*m.M34
+	tmp.M24 = m.M21*m.M33*m.M14 - m.M31*m.M23*m.M14 + m.M31*m.M13*m.M24 - m.M11*m.M33*m.M24 - m.M21*m.M13*m.M34 + m.M11*m.M23*m.M34
+	tmp.M34 = m.M31*m.M22*m.M14 - m.M21*m.M32*m.M14 - m.M31*m.M12*m.M24 + m.M11*m.M32*m.M24 + m.M21*m.M12*m.M34 - m.M11*m.M22*m.M34
+	tmp.M44 = m.M21*m.M32*m.M13 - m.M31*m.M22*m.M13 + m.M31*m.M12*m.M23 - m.M11*m.M32*m.M23 - m.M21*m.M12*m.M33 + m.M11*m.M22*m.M33
+
+	inv_det := 1.0 / det
+	tmp.M11 *= inv_det
+	tmp.M21 *= inv_det
+	tmp.M31 *= inv_det
+	tmp.M41 *= inv_det
+	tmp.M12 *= inv_det
+	tmp.M22 *= inv_det
+	tmp.M32 *= inv_det
+	tmp.M42 *= inv_det
+	tmp.M13 *= inv_det
+	tmp.M23 *= inv_det
+	tmp.M33 *= inv_det
+	tmp.M43 *= inv_det
+	tmp.M14 *= inv_det
+	tmp.M24 *= inv_det
+	tmp.M34 *= inv_det
+	tmp.M44 *= inv_det
+
+	return tmp, nil
+}
+
+//inverts the matrix and returns it
 func (m *Matrix4) Invert() (*Matrix4, error) {
 	det := m.Determinant()
 	if det == 0 {
@@ -313,7 +378,7 @@ func (m *Matrix4) RotMatrix(rot *Matrix4) *Matrix4 {
 
 //extract the scale factors into a Vector3
 func (m *Matrix4) ScaleVector(v *Vector3) *Vector3 {
-	if v ==nil{
+	if v == nil {
 		v = new(Vector3)
 	}
 	v.X, v.Y, v.Z = m.M11, m.M12, m.M13
@@ -326,5 +391,3 @@ func (m *Matrix4) ScaleVector(v *Vector3) *Vector3 {
 
 	return v
 }
-
-
