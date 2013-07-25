@@ -183,3 +183,21 @@ func (vec Vector3) Invert() Vector3 {
 	vec.Z = -vec.Z
 	return vec
 }
+
+func (v *Vector3) ApplyQuaternion(q Quaternion) *Vector3 {
+	// calculate quat * vector
+
+	ix := q.W*v.X + q.Y*v.Z - q.Z*v.Y
+	iy := q.W*v.Y + q.Z*v.X - q.X*v.Z
+	iz := q.W*v.Z + q.X*v.Y - q.Y*v.X
+	iw := -q.X*v.X - q.Y*v.Y - q.Z*v.Z
+
+	// calculate result * inverse quat
+
+	v.X = ix*q.W + iw*-q.X + iy*-q.Z - iz*-q.Y
+	v.Y = iy*q.W + iw*-q.Y + iz*-q.X - ix*-q.Z
+	v.Z = iz*q.W + iw*-q.Z + ix*-q.Y - iy*-q.X
+
+	return v
+
+}

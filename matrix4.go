@@ -256,3 +256,75 @@ func UnProject(window Vector3, modelview, projection *Matrix4, viewport Vector4)
 	obj = obj.Scale(1.0 / obj.W)
 	return Vec3(obj.X, obj.Y, obj.Z), nil
 }
+
+//compose a Matrix4 given a position (Vector3) a rotation (Quaternion) and a scale (Vector3)
+//shameless inspired from three.js
+func (m *Matrix4) Compose(position Vector3, rotation Quaternion, scale Vector3) *Matrix4 {
+	//set rotation
+	m = rotation.Matrix()
+	//set scale
+	m.M11 *= scale.X
+	m.M12 *= scale.X
+	m.M13 *= scale.X
+	m.M21 *= scale.Y
+	m.M22 *= scale.Y
+	m.M23 *= scale.Y
+	m.M31 *= scale.Z
+	m.M32 *= scale.Z
+	m.M33 *= scale.Z
+	m.M41 = position.X
+	m.M42 = position.Y
+	m.M43 = position.Z
+	return m
+}
+
+//Extract the pure rotation matrix filling the one passed as argument or
+//alocating anotehr one
+func (m *Matrix4) RotMatrix(rot *Matrix4) *Matrix4 {
+	if rot == nil {
+		rot = new(Matrix4)
+	}
+
+	v := Vector3{m.M11, m.M12, m.M13}
+	//v.X, v.Y, v.Z = m.M11, m.M12, m.M13
+	scaleX := 1.0 / v.Len()
+	v.X, v.Y, v.Z = m.M21, m.M22, m.M23
+	scaleY := 1.0 / v.Len()
+	v.X, v.Y, v.Z = m.M31, m.M32, m.M33
+	scaleZ := 1.0 / v.Len()
+
+	rot.M11 = m.M11 * scaleX
+	rot.M12 = m.M12 * scaleX
+	rot.M13 = m.M13 * scaleX
+
+	rot.M21 = m.M21 * scaleY
+	rot.M22 = m.M22 * scaleY
+	rot.M23 = m.M23 * scaleY
+
+	rot.M31 = m.M31 * scaleZ
+	rot.M32 = m.M32 * scaleZ
+	rot.M33 = m.M33 * scaleZ
+
+	rot.M44 = 1 //not sure about this...
+
+	return rot
+
+}
+
+//extract the scale factors into a Vector3
+func (m *Matrix4) ScaleVector(v *Vector3) *Vector3 {
+	if v ==nil{
+		v = new(Vector3)
+	}
+	v.X, v.Y, v.Z = m.M11, m.M12, m.M13
+	scaleX := v.Len()
+	v.X, v.Y, v.Z = m.M21, m.M22, m.M23
+	scaleY := v.Len()
+	v.X, v.Y, v.Z = m.M31, m.M32, m.M33
+	scaleZ := v.Len()
+	v.X, v.Y, v.Z = scaleX, scaleY, scaleZ
+
+	return v
+}
+
+

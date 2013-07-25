@@ -239,3 +239,15 @@ func (q *Quaternion) Matrix() *Matrix4 {
 	matrix.M44 = 1
 	return matrix
 }
+
+
+
+func (q *Quaternion)RotateVector3(v Vector3)Vector3{
+	vn:= v.Nor()
+	vq := Quaternion{0, vn.X, vn.Y, vn.Z}
+	res := vq.Mul(q.Conjugate())
+	res = q.Mul(res)
+	return Vector3{res.X, res.Y, res.Z}
+}
+
+
