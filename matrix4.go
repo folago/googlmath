@@ -43,8 +43,8 @@ func NewTranslationMatrix4(x, y, z float32) *Matrix4 {
 // LookAt Matrix right hand
 func NewLookAtMatrix4(eye, center, up Vector3) *Matrix4 {
 	zAxis := (eye.Sub(center)).Nor()
-	xAxis := (up.Crs(zAxis)).Nor()
-	yAxis := zAxis.Crs(xAxis)
+	xAxis := (up.Cross(zAxis)).Nor()
+	yAxis := zAxis.Cross(xAxis)
 
 	return &Matrix4{
 		xAxis.X, yAxis.X, zAxis.X, 0,
