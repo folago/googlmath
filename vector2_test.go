@@ -81,14 +81,14 @@ func (s *Vector2TestSuite) Vector2Scale(c *C) {
 	c.Assert(s.vec.Scale(2), Equals, Vec2(-4, 0))
 }
 
-func (s *Vector2TestSuite) Vector2Dst(c *C) {
+func (s *Vector2TestSuite) Vector2Distance(c *C) {
 	s.vec.Set(-2, 0)
-	c.Assert(s.vec.Dst(Vec2(0, 0)), Equals, 2)
+	c.Assert(s.vec.Distance(Vec2(0, 0)), Equals, 2)
 }
 
-func (s *Vector2TestSuite) Vector2Dst2(c *C) {
+func (s *Vector2TestSuite) Vector2Distance2(c *C) {
 	s.vec.Set(-2, 0)
-	c.Assert(s.vec.Dst2(Vec2(0, 0)), Equals, 4)
+	c.Assert(s.vec.Distance2(Vec2(0, 0)), Equals, 4)
 }
 
 func (s *Vector2TestSuite) Vector2Limit(c *C) {
@@ -98,9 +98,9 @@ func (s *Vector2TestSuite) Vector2Limit(c *C) {
 
 // TODO MulMatrix
 
-func (s *Vector2TestSuite) Vector2Crs(c *C) {
+func (s *Vector2TestSuite) Vector2Cross(c *C) {
 	s.vec.Set(5, 1)
-	c.Assert(s.vec.Crs(Vec2(-1, 0)), Equals, 1.0)
+	c.Assert(s.vec.Cross(Vec2(-1, 0)), Equals, 1.0)
 }
 
 func (s *Vector2TestSuite) Vector2Angle(c *C) {
@@ -139,6 +139,16 @@ func (s *Vector2TestSuite) Vector2Lerp(c *C) {
 
 	c.Assert(v3.X, Equals, xResult)
 	c.Assert(v3.Y, Equals, yResult)
+}
+
+func (s *Vector2TestSuite) Vector2Faceforward(c *C) {
+	v := Vec2(1.0, -2.0)
+	n := Vec2(0.0, 0.0)
+	i := Vec2(2.2, 0.3)
+
+	expected := Vec2(-1.0, 2.0)
+	result := v.Faceforward(i, n)
+	c.Check(result, EqualsFloat32, expected)
 }
 
 // ### Benchmarks ###

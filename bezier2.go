@@ -34,9 +34,9 @@ func (b *Bezier2) Approximate(p3 Vector2) float32 {
 	p1 := b.Points[0]
 	p2 := b.Points[len(b.Points)-1]
 
-	l1 := p1.Dst(p2)
-	l2 := p3.Dst(p2)
-	l3 := p3.Dst(p1)
+	l1 := p1.Distance(p2)
+	l2 := p3.Distance(p2)
+	l3 := p3.Distance(p1)
 	s := (l2*l2 + l1*l1 - l3*l3) / (2 * l1)
 
 	return Clampf((l1-s)/l1, 0.0, 1.0)
