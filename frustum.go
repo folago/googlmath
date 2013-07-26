@@ -110,7 +110,7 @@ func (f *Frustum) SphereInFrustumWithoutNearFar(center Vector3, radius float32) 
 
 // Returns whether the given {@link BoundingBox} is in the frustum.
 func (f *Frustum) BoundsInFrustum(bounds *BoundingBox) bool {
-	corners := bounds.GetCorners()
+	corners := bounds.Corners()
 
 	out := 0
 	for i := 0; i < len(corners); i++ {

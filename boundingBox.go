@@ -50,7 +50,7 @@ func (box *BoundingBox) IsValid() bool {
 	return box.Min.X < box.Max.X && box.Min.Y < box.Max.Y && box.Min.Z < box.Max.Z
 }
 
-func (box *BoundingBox) GetCorners() []Vector3 {
+func (box *BoundingBox) Corners() []Vector3 {
 	corners := make([]Vector3, 8)
 	corners[0] = Vec3(box.Min.X, box.Min.Y, box.Min.Z)
 	corners[1] = Vec3(box.Max.X, box.Min.Y, box.Min.Z)
