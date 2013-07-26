@@ -14,9 +14,21 @@ type BBBoolTestValue struct {
 	Expected bool
 }
 
+type BBVec3ArrayTestValue struct {
+	Value    *BoundingBox
+	Expected []Vector3
+}
+
+type BBVec3TestValue struct {
+	Value    *BoundingBox
+	Expected Vector3
+}
+
 type BoundingBoxTestSuite struct {
-	newBBTestTable   []BB2Vec3TestValue
-	isValidTestTable []BBBoolTestValue
+	newBBTestTable     []BB2Vec3TestValue
+	isValidTestTable   []BBBoolTestValue
+	cornersTestTable   []BBVec3ArrayTestValue
+	dimensionTestTable []BBVec3TestValue
 }
 
 var _ = Suite(&BoundingBoxTestSuite{})
@@ -61,6 +73,41 @@ func (s *BoundingBoxTestSuite) SetUpTest(c *C) {
 			false,
 		},
 	}
+
+	s.cornersTestTable = []BBVec3ArrayTestValue{
+		BBVec3ArrayTestValue{
+			NewBoundingBox(Vec3(1, 2, 3), Vec3(-1, -2, -3)),
+			[]Vector3{
+				Vec3(-1, -2, -3),
+				Vec3(1, -2, -3),
+				Vec3(1, 2, -3),
+				Vec3(-1, 2, -3),
+				Vec3(-1, -2, 3),
+				Vec3(1, -2, 3),
+				Vec3(1, 2, 3),
+				Vec3(-1, 2, 3),
+			},
+		},
+	}
+
+	s.dimensionTestTable = []BBVec3TestValue{
+		BBVec3TestValue{
+			NewBoundingBox(Vec3(0, 0, 0), Vec3(1, 1, 1)),
+			Vec3(1, 1, 1),
+		},
+		BBVec3TestValue{
+			NewBoundingBox(Vec3(0, 0, 0), Vec3(0, 0, 0)),
+			Vec3(0, 0, 0),
+		},
+		BBVec3TestValue{
+			NewBoundingBox(Vec3(-1, -1, 0), Vec3(1, 1, 1)),
+			Vec3(2, 2, 1),
+		},
+		BBVec3TestValue{
+			NewBoundingBox(Vec3(-1, -1, -1), Vec3(-2, -2, -2)),
+			Vec3(1, 1, 1),
+		},
+	}
 }
 
 func (s *BoundingBoxTestSuite) TestNewBoundingBox(c *C) {
@@ -89,5 +136,19 @@ func (s *BoundingBoxTestSuite) TestIsValid(c *C) {
 	for _, value := range s.isValidTestTable {
 		obtained := value.Value.IsValid()
 		c.Check(obtained, Equals, value.Expected, Commentf("%v.IsValid()==%t epected %t", value.Value, obtained, value.Expected))
+	}
+}
+
+func (s *BoundingBoxTestSuite) TestCorners(c *C) {
+	for _, value := range s.cornersTestTable {
+		obtained := value.Value.Corners()
+		c.Check(obtained, DeepEquals, value.Expected)
+	}
+}
+
+func (s *BoundingBoxTestSuite) TestDimension(c *C) {
+	for _, value := range s.dimensionTestTable {
+		obtained := value.Value.Dimension()
+		c.Check(obtained, DeepEquals, value.Expected)
 	}
 }
