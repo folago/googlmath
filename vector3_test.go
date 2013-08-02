@@ -67,14 +67,14 @@ func (s *Vector3TestSuite) Vector3Len2(c *C) {
 	c.Assert(s.vec.Len2(), Equals, 4)
 }
 
-func (s *Vector3TestSuite) Vector3Dst(c *C) {
+func (s *Vector3TestSuite) Vector3Distance(c *C) {
 	s.vec.SetVec3(Vec3(2, 0, 0))
-	c.Assert(s.vec.Dst(Vec3(0, 0, 0)), Equals, 2)
+	c.Assert(s.vec.Distance(Vec3(0, 0, 0)), Equals, 2)
 }
 
-func (s *Vector3TestSuite) Vector3Dst2(c *C) {
+func (s *Vector3TestSuite) Vector3Distance2(c *C) {
 	s.vec.SetVec3(Vec3(2, 0, 0))
-	c.Assert(s.vec.Dst2(Vec3(0, 0, 0)), Equals, 4)
+	c.Assert(s.vec.Distance2(Vec3(0, 0, 0)), Equals, 4)
 }
 
 func (s *Vector3TestSuite) Vector3Nor(c *C) {
@@ -87,9 +87,9 @@ func (s *Vector3TestSuite) Vector3Dot(c *C) {
 	c.Assert(s.vec.Dot(Vec3(2, 0, 0)), Equals, 4)
 }
 
-func (s *Vector3TestSuite) Vector3Crs(c *C) {
+func (s *Vector3TestSuite) Vector3Cross(c *C) {
 	s.vec.SetVec3(Vec3(2, 1, 4))
-	c.Assert(s.vec.Crs(Vec3(2, -3, 0)), Equals, Vec3(12, 6, -9))
+	c.Assert(s.vec.Cross(Vec3(2, -3, 0)), Equals, Vec3(12, 6, -9))
 }
 
 // TODO MulMatrix

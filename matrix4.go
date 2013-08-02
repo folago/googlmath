@@ -60,8 +60,8 @@ func NewTranslationMatrix4(x, y, z float32) *Matrix4 {
 // LookAt Matrix right hand
 func NewLookAtMatrix4(eye, center, up Vector3) *Matrix4 {
 	zAxis := (eye.Sub(center)).Nor()
-	xAxis := (up.Crs(zAxis)).Nor()
-	yAxis := zAxis.Crs(xAxis)
+	xAxis := (up.Cross(zAxis)).Nor()
+	yAxis := zAxis.Cross(xAxis)
 
 	return &Matrix4{
 		xAxis.X, yAxis.X, zAxis.X, 0,
@@ -124,18 +124,20 @@ func (m1 *Matrix4) Mul(m2 *Matrix4) *Matrix4 {
 }
 
 func (m *Matrix4) MulVec3(vec Vector3) Vector3 {
-	vec.X = vec.X*m.M11 + vec.Y*m.M21 + vec.Z*m.M31 + m.M41
-	vec.Y = vec.X*m.M12 + vec.Y*m.M22 + vec.Z*m.M32 + m.M42
-	vec.Z = vec.X*m.M13 + vec.Y*m.M23 + vec.Z*m.M33 + m.M43
-	return vec
+	tmp := Vector3{}
+	tmp.X = vec.X*m.M11 + vec.Y*m.M21 + vec.Z*m.M31 + m.M41
+	tmp.Y = vec.X*m.M12 + vec.Y*m.M22 + vec.Z*m.M32 + m.M42
+	tmp.Z = vec.X*m.M13 + vec.Y*m.M23 + vec.Z*m.M33 + m.M43
+	return tmp
 }
 
 func (m *Matrix4) MulVec4(vec Vector4) Vector4 {
-	vec.X = vec.X*m.M11 + vec.Y*m.M21 + vec.Z*m.M31 + vec.W*m.M41
-	vec.Y = vec.X*m.M12 + vec.Y*m.M22 + vec.Z*m.M32 + vec.W*m.M42
-	vec.Z = vec.X*m.M13 + vec.Y*m.M23 + vec.Z*m.M33 + vec.W*m.M43
-	vec.W = vec.X*m.M14 + vec.Y*m.M24 + vec.Z*m.M34 + vec.W*m.M44
-	return vec
+	tmp := Vector4{}
+	tmp.X = vec.X*m.M11 + vec.Y*m.M21 + vec.Z*m.M31 + vec.W*m.M41
+	tmp.Y = vec.X*m.M12 + vec.Y*m.M22 + vec.Z*m.M32 + vec.W*m.M42
+	tmp.Z = vec.X*m.M13 + vec.Y*m.M23 + vec.Z*m.M33 + vec.W*m.M43
+	tmp.W = vec.X*m.M14 + vec.Y*m.M24 + vec.Z*m.M34 + vec.W*m.M44
+	return tmp
 }
 
 func (m *Matrix4) Scale(scalar Vector3) *Matrix4 {

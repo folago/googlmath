@@ -11,5 +11,5 @@ func NewSphere(center Vector3, radius float32) *Sphere {
 }
 
 func (s *Sphere) Overlaps(sphere *Sphere) bool {
-	return s.Center.Dst2(sphere.Center) < (s.Radius+sphere.Radius)*(s.Radius+sphere.Radius)
+	return s.Center.Distance2(sphere.Center) < (s.Radius+sphere.Radius)*(s.Radius+sphere.Radius)
 }

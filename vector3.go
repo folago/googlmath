@@ -84,12 +84,12 @@ func (vec Vector3) Len2() float32 {
 	return vec.X*vec.X + vec.Y*vec.Y + vec.Z*vec.Z
 }
 
-func (vec Vector3) Dst(vec2 Vector3) float32 {
-	return Sqrt(vec.Dst2(vec2))
+func (vec Vector3) Distance(vec2 Vector3) float32 {
+	return Sqrt(vec.Distance2(vec2))
 }
 
 // Returns the squared distance between this point and the given point
-func (vec Vector3) Dst2(vec2 Vector3) float32 {
+func (vec Vector3) Distance2(vec2 Vector3) float32 {
 	a := vec2.X - vec.X
 	b := vec2.Y - vec.Y
 	c := vec2.Z - vec.Z
@@ -112,7 +112,7 @@ func (vec Vector3) Dot(vec2 Vector3) float32 {
 }
 
 // Returns the cross product between this vector and the other vector
-func (vec Vector3) Crs(vec2 Vector3) Vector3 {
+func (vec Vector3) Cross(vec2 Vector3) Vector3 {
 	x := vec.Y*vec2.Z - vec.Z*vec2.Y
 	y := vec.Z*vec2.X - vec.X*vec2.Z
 	z := vec.X*vec2.Y - vec.Y*vec2.X

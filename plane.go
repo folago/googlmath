@@ -26,7 +26,7 @@ func (p *Plane) Cpy() *Plane {
 func (p *Plane) Set(p1, p2, p3 Vector3) {
 	l := p1.Sub(p2)
 	r := p2.Sub(p3)
-	p.Normal = l.Crs(r).Nor()
+	p.Normal = l.Cross(r).Nor()
 	p.D = -p1.Dot(p.Normal)
 }
 

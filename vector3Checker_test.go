@@ -28,5 +28,9 @@ func (checker *Vector3Checker) Check(params []interface{}, names []string) (bool
 		return false, "Param[1] not a Vector3 type"
 	}
 
-	return NearlyEqualFloat32(v1.X, v2.X) && NearlyEqualFloat32(v1.Y, v2.Y) && NearlyEqualFloat32(v1.Z, v2.Z), ""
+	return Vector3NearlyEqual(v1, v2), ""
+}
+
+func Vector3NearlyEqual(a, b Vector3) bool {
+	return NearlyEqualFloat32(a.X, b.X) && NearlyEqualFloat32(a.Y, b.Y) && NearlyEqualFloat32(a.Z, b.Z)
 }

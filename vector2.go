@@ -74,6 +74,7 @@ func (vec Vector2) Add(vec2 Vector2) Vector2 {
 	return vec
 }
 
+// Dot returns the dot product of this vector and the given vector.
 func (vec Vector2) Dot(vec2 Vector2) float32 {
 	return vec.X*vec2.X + vec.Y*vec2.Y
 }
@@ -96,15 +97,15 @@ func (vec Vector2) Scale(scale float32) Vector2 {
 	return vec
 }
 
-// Distance between this and the other vector
-func (vec Vector2) Dst(vec2 Vector2) float32 {
+// Distance returns the distance between this and the given vector.
+func (vec Vector2) Distance(vec2 Vector2) float32 {
 	xd := vec2.X - vec.X
 	yd := vec2.Y - vec.Y
 	return Sqrt(xd*xd + yd*yd)
 }
 
-// The squared distance between this and the other vector
-func (vec Vector2) Dst2(vec2 Vector2) float32 {
+// Distance2 returns the squared distance between this and the given vector.
+func (vec Vector2) Distance2(vec2 Vector2) float32 {
 	xd := vec2.X - vec.X
 	yd := vec2.Y - vec.Y
 	return xd*xd + yd*yd
@@ -125,8 +126,8 @@ func (vec Vector2) MulMatrix(m *Matrix3) Vector2 {
 	return vec
 }
 
-// Calculates the 2D cross product between this and the given vector.
-func (vec Vector2) Crs(vec2 Vector2) float32 {
+// Cross returns the cross product of this vector ang the given vector.
+func (vec Vector2) Cross(vec2 Vector2) float32 {
 	return vec.X*vec2.Y - vec.Y*vec2.X
 }
 
@@ -158,11 +159,18 @@ func (vec Vector2) Rotate(degrees float32) Vector2 {
 	return vec
 }
 
-// Linearly interpolates between this vector and the target vector by alpha which is in the range [0,1].
-// The result is returned.
+// Lerp returns the linearly interpolates between this vector and the target vector by alpha which is in the range [0,1].
 func (vec Vector2) Lerp(target Vector2, alpha float32) Vector2 {
 	invAlpha := 1.0 - alpha
 	vec.X = vec.X*invAlpha + target.X*alpha
 	vec.Y = vec.Y*invAlpha + target.Y*alpha
 	return vec
+}
+
+// Faceforward returns this vector if n,Dot(i) < 0, otherwise, returns the negative of this vector.
+func (vec Vector2) Faceforward(i, n Vector2) Vector2 {
+	if n.Dot(i) < 0 {
+		return vec
+	}
+	return Vector2{-vec.X, -vec.Y}
 }
