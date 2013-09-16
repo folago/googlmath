@@ -11,6 +11,11 @@ func Rect(x, y, width, height float32) *Rectangle {
 	return &Rectangle{x, y, width, height}
 }
 
+func (r *Rectangle) SetCenter(x, y float32) {
+	r.X = x - r.Width/2
+	r.Y = y - r.Height/2
+}
+
 func (r *Rectangle) ContainsRec(rec *Rectangle) bool {
 	xmin := rec.X
 	xmax := xmin + rec.Width
@@ -48,4 +53,8 @@ func (r *Rectangle) Merge(rect *Rectangle) *Rectangle {
 	r.Y = minY
 	r.Height = maxY - minY
 	return r
+}
+
+func (r *Rectangle) Center() Vector2 {
+	return Vec2(r.X+r.Width/2, r.Y+r.Height/2)
 }
