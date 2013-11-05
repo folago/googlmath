@@ -14,6 +14,12 @@ type BBBoolTestValue struct {
 	Expected bool
 }
 
+type BB2BoolTestValue struct {
+	Box      *BoundingBox
+	Bounds   *BoundingBox
+	Expected bool
+}
+
 type BBVec3ArrayTestValue struct {
 	Value    *BoundingBox
 	Expected []Vector3
@@ -24,11 +30,20 @@ type BBVec3TestValue struct {
 	Expected Vector3
 }
 
+type BBVec3BoolTestValue struct {
+	Value    *BoundingBox
+	Vec      Vector3
+	Expected bool
+}
+
 type BoundingBoxTestSuite struct {
-	newBBTestTable     []BB2Vec3TestValue
-	isValidTestTable   []BBBoolTestValue
-	cornersTestTable   []BBVec3ArrayTestValue
-	dimensionTestTable []BBVec3TestValue
+	newBBTestTable       []BB2Vec3TestValue
+	isValidTestTable     []BBBoolTestValue
+	cornersTestTable     []BBVec3ArrayTestValue
+	dimensionTestTable   []BBVec3TestValue
+	containsTestTable    []BB2BoolTestValue
+	containsVecTestTable []BBVec3BoolTestValue
+	overlapsTestTable    []BB2BoolTestValue
 }
 
 var _ = Suite(&BoundingBoxTestSuite{})
@@ -108,6 +123,65 @@ func (s *BoundingBoxTestSuite) SetUpTest(c *C) {
 			Vec3(1, 1, 1),
 		},
 	}
+
+	s.containsTestTable = []BB2BoolTestValue{
+		BB2BoolTestValue{
+			NewBoundingBox(Vec3(0, 0, 0), Vec3(1, 1, 1)),
+			NewBoundingBox(Vec3(-1, -1, -1), Vec3(0, 2, 0)),
+			false,
+		},
+		BB2BoolTestValue{
+			NewBoundingBox(Vec3(0, 0, 1), Vec3(1, 1, -1)),
+			NewBoundingBox(Vec3(-1, -1, -1), Vec3(0, 2, 0)),
+			false,
+		},
+		BB2BoolTestValue{
+			NewBoundingBox(Vec3(-1, -1, -1), Vec3(1, 1, 1)),
+			NewBoundingBox(Vec3(0, 0, 0), Vec3(0.5, 0.5, 0)),
+			true,
+		},
+	}
+
+	s.containsVecTestTable = []BBVec3BoolTestValue{
+		BBVec3BoolTestValue{
+			NewBoundingBox(Vec3(0, 0, 0), Vec3(1, 1, 0)),
+			Vec3(0.5, 0.5, 0),
+			true,
+		},
+		BBVec3BoolTestValue{
+			NewBoundingBox(Vec3(0, 0, 0), Vec3(1, 1, 1)),
+			Vec3(0.5, 0.5, 0),
+			true,
+		},
+		BBVec3BoolTestValue{
+			NewBoundingBox(Vec3(0, 0, 0), Vec3(1, 1, 0)),
+			Vec3(0.5, 0.5, -1),
+			false,
+		},
+		BBVec3BoolTestValue{
+			NewBoundingBox(Vec3(0, 0, 0), Vec3(1, 1, 0)),
+			Vec3(0, 0, 0),
+			true,
+		},
+	}
+
+	s.overlapsTestTable = []BB2BoolTestValue{
+		BB2BoolTestValue{
+			NewBoundingBox(Vec3(0, 0, 0), Vec3(1, 1, 0)),
+			NewBoundingBox(Vec3(-1, -1, 0), Vec3(0, 0, 0)),
+			true,
+		},
+		BB2BoolTestValue{
+			NewBoundingBox(Vec3(0, 0, 0), Vec3(1, 1, 1)),
+			NewBoundingBox(Vec3(-1, -1, -1), Vec3(-0.1, -0.1, -0.1)),
+			false,
+		},
+		BB2BoolTestValue{
+			NewBoundingBox(Vec3(0, 0, 0), Vec3(1, 1, 1)),
+			NewBoundingBox(Vec3(-1, 0, 0), Vec3(0, 0, 0.5)),
+			true,
+		},
+	}
 }
 
 func (s *BoundingBoxTestSuite) TestNewBoundingBox(c *C) {
@@ -150,5 +224,19 @@ func (s *BoundingBoxTestSuite) TestDimension(c *C) {
 	for _, value := range s.dimensionTestTable {
 		obtained := value.Value.Dimension()
 		c.Check(obtained, DeepEquals, value.Expected)
+	}
+}
+
+func (s *BoundingBoxTestSuite) TestContainsVec(c *C) {
+	for _, value := range s.containsVecTestTable {
+		obtained := value.Value.ContainsVec(value.Vec)
+		c.Check(obtained, Equals, value.Expected)
+	}
+}
+
+func (s *BoundingBoxTestSuite) TestOverlaps(c *C) {
+	for _, value := range s.overlapsTestTable {
+		obtained := value.Box.Overlaps(value.Bounds)
+		c.Check(obtained, Equals, value.Expected, Commentf("Ovleraps(%v,%v) %t Expected:%t", value.Box, value.Bounds, obtained, value.Expected))
 	}
 }

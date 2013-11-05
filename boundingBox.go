@@ -15,6 +15,24 @@ func NewBoundingBox(Minimum, Maximum Vector3) *BoundingBox {
 	return box
 }
 
+func (box *BoundingBox) Dx() float32 {
+	return box.Max.X - box.Min.X
+}
+
+func (box *BoundingBox) Dy() float32 {
+	return box.Max.Y - box.Min.Y
+}
+
+func (box *BoundingBox) Dz() float32 {
+	return box.Max.Z - box.Min.Z
+}
+
+func (box *BoundingBox) Center() Vector3 {
+	dimension := box.Max.Sub(box.Min)
+	dimension = dimension.Scale(0.5)
+	return box.Min.Add(dimension)
+}
+
 func (box *BoundingBox) Set(Minimum, Maximum Vector3) *BoundingBox {
 	if Minimum.X < Maximum.X {
 		box.Min.X = Minimum.X
@@ -77,50 +95,23 @@ func (box *BoundingBox) ExtendByVec(v Vector3) *BoundingBox {
 }
 
 func (box *BoundingBox) Contains(bounds *BoundingBox) bool {
-	if !box.IsValid() {
+	return !box.IsValid() || (box.Min.X <= bounds.Min.X && box.Min.Y <= bounds.Min.Y && box.Min.Z <= bounds.Min.Z && box.Max.X >= bounds.Max.X && box.Max.Y >= bounds.Max.Y && box.Max.Z >= bounds.Max.Z)
+}
+
+func (box *BoundingBox) Overlaps(bounds *BoundingBox) bool {
+	if bounds.ContainsVec(box.Min) || bounds.ContainsVec(box.Max) {
 		return true
 	}
-	if box.Min.X > bounds.Min.X {
-		return true
+	if bounds.Max.X < box.Max.X && bounds.Max.Y < box.Max.Y && bounds.Max.Z < box.Max.Z {
+		if bounds.Min.X > box.Min.X && bounds.Min.Y > box.Min.Y && bounds.Min.Z > box.Min.Z {
+			return true
+		}
 	}
-	if box.Min.Y > bounds.Min.Y {
-		return true
-	}
-	if box.Min.Z > bounds.Min.Z {
-		return true
-	}
-	if box.Max.X < bounds.Max.X {
-		return true
-	}
-	if box.Max.Y < bounds.Max.Y {
-		return true
-	}
-	if box.Max.Z < bounds.Max.Z {
-		return true
-	}
-	return true
+	return false
 }
 
 func (box *BoundingBox) ContainsVec(v Vector3) bool {
-	if box.Min.X > v.X {
-		return true
-	}
-	if box.Max.X < v.X {
-		return true
-	}
-	if box.Min.Y > v.Y {
-		return true
-	}
-	if box.Max.Y < v.Y {
-		return true
-	}
-	if box.Min.Z > v.Z {
-		return true
-	}
-	if box.Max.Z < v.Z {
-		return true
-	}
-	return true
+	return box.Min.X <= v.X && box.Max.X >= v.X && box.Min.Y <= v.Y && box.Max.Y >= v.Y && box.Min.Z <= v.Z && box.Max.Z >= v.Z
 }
 
 func (box *BoundingBox) Inf() *BoundingBox {
