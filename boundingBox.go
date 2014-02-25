@@ -120,6 +120,12 @@ func (box *BoundingBox) Inf() *BoundingBox {
 	return box
 }
 
+func (box *BoundingBox) Offset(off Vector3) *BoundingBox {
+	return &BoundingBox{Min: box.Min.Add(off),
+		Max: box.Max.Add(off),
+	}
+}
+
 func (box *BoundingBox) Clr() *BoundingBox {
 	box.Min = box.Min.Clr()
 	box.Max = box.Max.Clr()
